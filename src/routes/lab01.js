@@ -1,35 +1,31 @@
 const express = require('express');
 const router = express.Router();
 
-// Lab 01: HTTP Methods - API Tester
+// Lab 01: HTTP Methods - Terminal-first API Tester
+// Students use curl commands from their terminal
+
 router.get('/', (req, res) => {
   res.render('labs/lab01', {
-    title: 'Developer Portal - API Tester',
-    result: null
+    title: 'Developer Portal - API Tester'
   });
 });
 
-// Handle API test requests
+// API endpoint that receives requests and returns JSON
 router.all('/api/test', (req, res) => {
-  const result = {
+  const response = {
     method: req.method,
     path: req.path,
-    headers: req.headers,
+    headers: {
+      'content-type': req.headers['content-type'] || null,
+      'user-agent': req.headers['user-agent'] || null,
+      'host': req.headers['host'] || null
+    },
     query: req.query,
     body: req.body,
     timestamp: new Date().toISOString()
   };
 
-  // If it's an AJAX request, return JSON
-  if (req.xhr || req.headers.accept?.includes('application/json')) {
-    return res.json(result);
-  }
-
-  // Otherwise render the page with result
-  res.render('labs/lab01', {
-    title: 'Developer Portal - API Tester',
-    result: result
-  });
+  res.json(response);
 });
 
 module.exports = router;

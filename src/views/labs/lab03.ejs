@@ -9,16 +9,149 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    .sql-grid { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; }
-    @media (max-width: 900px) { .sql-grid { grid-template-columns: 1fr; } }
-    .query-btn { width: 100%; margin-bottom: 0.5rem; text-align: left; padding: 0.75rem 1rem; }
-    .query-btn.active { background: var(--primary); color: white; }
-    .query-form { display: none; }
-    .query-form.active { display: block; }
-    .sql-display { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.9rem; margin-bottom: 1rem; }
-    .sql-keyword { color: #569cd6; }
-    .sql-string { color: #ce9178; }
-    .sql-table { color: #4ec9b0; }
+    .sql-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 1000px) {
+      .sql-layout { grid-template-columns: 1fr; }
+    }
+    .sql-editor {
+      background: #1e1e1e;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .editor-header {
+      background: #2d2d2d;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #404040;
+    }
+    .editor-title {
+      color: #e5e7eb;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .sql-textarea {
+      width: 100%;
+      min-height: 150px;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      border: none;
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.9rem;
+      resize: vertical;
+      outline: none;
+    }
+    .sql-textarea::placeholder {
+      color: #6b7280;
+    }
+    .editor-footer {
+      background: #2d2d2d;
+      padding: 0.75rem 1rem;
+      display: flex;
+      gap: 0.5rem;
+      border-top: 1px solid #404040;
+    }
+    .btn-run {
+      background: #22c55e;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-run:hover { background: #16a34a; }
+    .btn-reset {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-reset:hover { background: #dc2626; }
+    .result-panel {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .result-header {
+      background: var(--background);
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-body {
+      padding: 1rem;
+      max-height: 400px;
+      overflow: auto;
+    }
+    .query-display {
+      background: #f1f5f9;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      color: #1e3a5f;
+    }
+    .example-box {
+      background: #fffbeb;
+      border: 1px solid #fbbf24;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .example-box h4 {
+      color: #b45309;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .example-code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #92400e;
+      cursor: pointer;
+      padding: 0.25rem 0;
+    }
+    .example-code:hover {
+      color: #b45309;
+      text-decoration: underline;
+    }
+    .schema-box {
+      background: #f0fdf4;
+      border: 1px solid #22c55e;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .schema-box h4 {
+      color: #166534;
+      margin-bottom: 0.5rem;
+    }
+    .schema-cols {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .schema-col {
+      background: #dcfce7;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #166534;
+    }
   </style>
 </head>
 <body>
@@ -30,7 +163,7 @@
       </a>
       <nav class="nav">
         <a href="/" class="nav-link">หน้าแรก</a>
-        <a href="/lab03" class="nav-link active">DB Explorer</a>
+        <a href="/lab03" class="nav-link active">SQL Playground</a>
       </nav>
       <div class="header-slogan">Internal Tools</div>
     </div>
@@ -38,170 +171,178 @@
 
   <div class="page-header">
     <div class="container">
-      <h1 class="page-title">Employee DB Explorer</h1>
-      <p class="page-subtitle">สำรวจฐานข้อมูลสินค้า ThaiMart</p>
+      <h1 class="page-title">SQL Playground</h1>
+      <p class="page-subtitle">พิมพ์คำสั่ง SQL ด้วยตัวเอง</p>
     </div>
   </div>
 
   <main class="main">
     <div class="container page-content">
-      <div class="sql-grid">
-        <!-- Query Selection Panel -->
-        <div>
-          <div class="card">
-            <div class="card-header">เลือกคำสั่ง SQL</div>
-            <div class="card-body">
-              <button class="btn query-btn <%= queryType === 'SELECT_ALL' ? 'active' : 'btn-outline' %>" onclick="showForm('SELECT_ALL')">
-                SELECT * (ดูทั้งหมด)
-              </button>
-              <button class="btn query-btn <%= queryType === 'SELECT_WHERE' ? 'active' : 'btn-outline' %>" onclick="showForm('SELECT_WHERE')">
-                SELECT WHERE (ค้นหา)
-              </button>
-              <button class="btn query-btn <%= queryType === 'INSERT' ? 'active' : 'btn-outline' %>" onclick="showForm('INSERT')">
-                INSERT (เพิ่มข้อมูล)
-              </button>
-              <button class="btn query-btn <%= queryType === 'UPDATE' ? 'active' : 'btn-outline' %>" onclick="showForm('UPDATE')">
-                UPDATE (แก้ไข)
-              </button>
-              <button class="btn query-btn <%= queryType === 'DELETE' ? 'active' : 'btn-outline' %>" onclick="showForm('DELETE')">
-                DELETE (ลบ)
-              </button>
-            </div>
-          </div>
 
-          <!-- Query Forms -->
-          <div class="card mt-2">
-            <div class="card-header">พารามิเตอร์</div>
-            <div class="card-body">
-              <!-- SELECT ALL -->
-              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'SELECT_ALL' ? 'active' : '' %>" id="form-SELECT_ALL">
-                <input type="hidden" name="queryType" value="SELECT_ALL">
-                <p class="text-muted">ดึงข้อมูลทั้งหมดจากตาราง</p>
-                <button type="submit" class="btn btn-primary mt-2">Execute</button>
-              </form>
-
-              <!-- SELECT WHERE -->
-              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'SELECT_WHERE' ? 'active' : '' %>" id="form-SELECT_WHERE">
-                <input type="hidden" name="queryType" value="SELECT_WHERE">
-                <div class="form-group">
-                  <label class="form-label">Column</label>
-                  <select name="filterColumn" class="form-select">
-                    <option value="id">id</option>
-                    <option value="name">name</option>
-                    <option value="category">category</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Value</label>
-                  <input type="text" name="filterValue" class="form-input" placeholder="ค่าที่ต้องการค้นหา">
-                </div>
-                <button type="submit" class="btn btn-primary">Execute</button>
-              </form>
-
-              <!-- INSERT -->
-              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'INSERT' ? 'active' : '' %>" id="form-INSERT">
-                <input type="hidden" name="queryType" value="INSERT">
-                <div class="form-group">
-                  <label class="form-label">ชื่อสินค้า</label>
-                  <input type="text" name="insertName" class="form-input" placeholder="ชื่อสินค้า">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">ราคา</label>
-                  <input type="number" name="insertPrice" class="form-input" placeholder="0">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">จำนวนคงเหลือ</label>
-                  <input type="number" name="insertStock" class="form-input" placeholder="0">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">หมวดหมู่</label>
-                  <input type="text" name="insertCategory" class="form-input" placeholder="หมวดหมู่">
-                </div>
-                <button type="submit" class="btn btn-primary">Execute</button>
-              </form>
-
-              <!-- UPDATE -->
-              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'UPDATE' ? 'active' : '' %>" id="form-UPDATE">
-                <input type="hidden" name="queryType" value="UPDATE">
-                <div class="form-group">
-                  <label class="form-label">ID ที่ต้องการแก้ไข</label>
-                  <input type="number" name="updateId" class="form-input" placeholder="1">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Column</label>
-                  <select name="updateColumn" class="form-select">
-                    <option value="name">name</option>
-                    <option value="price">price</option>
-                    <option value="stock">stock</option>
-                    <option value="category">category</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">ค่าใหม่</label>
-                  <input type="text" name="updateValue" class="form-input" placeholder="ค่าใหม่">
-                </div>
-                <button type="submit" class="btn btn-primary">Execute</button>
-              </form>
-
-              <!-- DELETE -->
-              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'DELETE' ? 'active' : '' %>" id="form-DELETE">
-                <input type="hidden" name="queryType" value="DELETE">
-                <div class="form-group">
-                  <label class="form-label">ID ที่ต้องการลบ</label>
-                  <input type="number" name="deleteId" class="form-input" placeholder="1">
-                </div>
-                <button type="submit" class="btn btn-danger">Execute</button>
-              </form>
-            </div>
-          </div>
+      <!-- Schema Info -->
+      <div class="schema-box">
+        <h4>📋 ตาราง: playground_products</h4>
+        <div class="schema-cols">
+          <span class="schema-col">id (SERIAL)</span>
+          <span class="schema-col">name (VARCHAR)</span>
+          <span class="schema-col">price (DECIMAL)</span>
+          <span class="schema-col">stock (INTEGER)</span>
+          <span class="schema-col">category (VARCHAR)</span>
         </div>
+      </div>
 
-        <!-- Results Panel -->
+      <div class="sql-layout">
+        <!-- Left: Editor -->
         <div>
+          <!-- SQL Editor -->
+          <form action="/lab03/execute" method="POST">
+            <div class="sql-editor">
+              <div class="editor-header">
+                <span class="editor-title">⌨️ พิมพ์คำสั่ง SQL ที่นี่</span>
+              </div>
+              <textarea
+                name="sql"
+                class="sql-textarea"
+                placeholder="SELECT * FROM playground_products;"
+                spellcheck="false"
+              ><%= query || '' %></textarea>
+              <div class="editor-footer">
+                <button type="submit" class="btn-run">
+                  ▶ Run
+                </button>
+                <button type="button" class="btn-reset" onclick="document.getElementById('resetForm').submit()">
+                  🔄 Reset Table
+                </button>
+              </div>
+            </div>
+          </form>
+          <form id="resetForm" action="/lab03/reset" method="POST" style="display:none;"></form>
+
+          <!-- Examples -->
+          <div class="example-box mt-2">
+            <h4>💡 ตัวอย่างคำสั่ง (คลิกเพื่อใส่)</h4>
+            <div class="example-code" onclick="setQuery('SELECT * FROM playground_products;')">
+              SELECT * FROM playground_products;
+            </div>
+            <div class="example-code" onclick="setQuery(`SELECT * FROM playground_products WHERE category = 'อิเล็กทรอนิกส์';`)">
+              SELECT * FROM playground_products WHERE category = 'อิเล็กทรอนิกส์';
+            </div>
+            <div class="example-code" onclick="setQuery(`SELECT * FROM playground_products WHERE price > 10000 ORDER BY price DESC;`)">
+              SELECT * FROM playground_products WHERE price > 10000 ORDER BY price DESC;
+            </div>
+            <div class="example-code" onclick="setQuery(`INSERT INTO playground_products (name, price, stock, category) VALUES ('สินค้าทดสอบ', 999, 10, 'ทดสอบ');`)">
+              INSERT INTO playground_products (name, price, stock, category) VALUES ('สินค้าทดสอบ', 999, 10, 'ทดสอบ');
+            </div>
+            <div class="example-code" onclick="setQuery(`UPDATE playground_products SET price = 9999 WHERE id = 1;`)">
+              UPDATE playground_products SET price = 9999 WHERE id = 1;
+            </div>
+            <div class="example-code" onclick="setQuery(`DELETE FROM playground_products WHERE id = 10;`)">
+              DELETE FROM playground_products WHERE id = 10;
+            </div>
+          </div>
+
+          <!-- Query Result -->
           <% if (query) { %>
-            <div class="card mb-2">
-              <div class="card-header">SQL Query ที่รัน</div>
-              <div class="card-body">
-                <div class="sql-display"><%= query %></div>
+            <div class="result-panel mt-2">
+              <div class="result-header">📤 ผลลัพธ์</div>
+              <div class="result-body">
+                <div class="query-display"><%= query %></div>
+
+                <% if (error) { %>
+                  <div class="alert alert-danger"><%= error %></div>
+                <% } else if (success) { %>
+                  <div class="alert alert-success"><%= success %></div>
+                <% } else if (result && result.length > 0) { %>
+                  <div class="table-container">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <% Object.keys(result[0]).forEach(key => { %>
+                            <th><%= key %></th>
+                          <% }) %>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% result.forEach(row => { %>
+                          <tr>
+                            <% Object.values(row).forEach(val => { %>
+                              <td><%= val %></td>
+                            <% }) %>
+                          </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="text-muted mt-1" style="font-size: 0.85rem;"><%= result.length %> แถว</p>
+                <% } else { %>
+                  <p class="text-muted">ไม่มีข้อมูลที่แสดง</p>
+                <% } %>
               </div>
             </div>
           <% } %>
+        </div>
 
-          <% if (error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-          <% } %>
-
-          <div class="card">
-            <div class="card-header">ผลลัพธ์ (<%= result ? result.length : 0 %> rows)</div>
-            <div class="card-body">
-              <% if (result && result.length > 0) { %>
+        <!-- Right: Current Table Data -->
+        <div>
+          <div class="result-panel">
+            <div class="result-header">📊 ข้อมูลปัจจุบันในตาราง (<%= products.length %> แถว)</div>
+            <div class="result-body">
+              <% if (products.length > 0) { %>
                 <div class="table-container">
                   <table class="table">
                     <thead>
                       <tr>
-                        <% Object.keys(result[0]).forEach(key => { %>
-                          <th><%= key %></th>
-                        <% }) %>
+                        <th>id</th>
+                        <th>name</th>
+                        <th>price</th>
+                        <th>stock</th>
+                        <th>category</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <% result.forEach(row => { %>
+                      <% products.forEach(p => { %>
                         <tr>
-                          <% Object.values(row).forEach(val => { %>
-                            <td><%= val %></td>
-                          <% }) %>
+                          <td><%= p.id %></td>
+                          <td><%= p.name %></td>
+                          <td><%= p.price %></td>
+                          <td><%= p.stock %></td>
+                          <td><%= p.category %></td>
                         </tr>
                       <% }) %>
                     </tbody>
                   </table>
                 </div>
               <% } else { %>
-                <p class="text-muted text-center">ไม่พบข้อมูล</p>
+                <p class="text-muted text-center">ไม่มีข้อมูล - กด Reset Table เพื่อเริ่มใหม่</p>
               <% } %>
+            </div>
+          </div>
+
+          <!-- Allowed Commands -->
+          <div class="card mt-2">
+            <div class="card-header">✅ คำสั่งที่อนุญาต</div>
+            <div class="card-body">
+              <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">
+                <strong style="color: var(--success);">SELECT</strong> - ดึงข้อมูล
+              </p>
+              <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">
+                <strong style="color: var(--info);">INSERT</strong> - เพิ่มข้อมูล
+              </p>
+              <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">
+                <strong style="color: var(--warning);">UPDATE</strong> - แก้ไขข้อมูล
+              </p>
+              <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">
+                <strong style="color: var(--danger);">DELETE</strong> - ลบข้อมูล
+              </p>
+              <hr style="margin: 1rem 0;">
+              <p style="font-size: 0.85rem; color: var(--text-muted);">
+                ❌ ไม่อนุญาต: DROP, TRUNCATE, ALTER, CREATE
+              </p>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </main>
 
@@ -214,16 +355,8 @@
   </footer>
 
   <script>
-    function showForm(type) {
-      document.querySelectorAll('.query-form').forEach(f => f.classList.remove('active'));
-      document.querySelectorAll('.query-btn').forEach(b => {
-        b.classList.remove('active');
-        b.classList.add('btn-outline');
-      });
-
-      document.getElementById('form-' + type).classList.add('active');
-      event.target.classList.remove('btn-outline');
-      event.target.classList.add('active');
+    function setQuery(sql) {
+      document.querySelector('.sql-textarea').value = sql;
     }
   </script>
 </body>

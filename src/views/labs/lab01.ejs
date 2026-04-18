@@ -9,53 +9,272 @@
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    .command-card {
-      background: #1e1e1e;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
-      overflow: hidden;
+    .lab-layout {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 1.5rem;
+      align-items: start;
     }
-    .command-header {
-      padding: 1rem 1.5rem;
+    @media (max-width: 1100px) {
+      .lab-layout {
+        grid-template-columns: 1fr;
+      }
+      .inspector-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-height: 50vh;
+        overflow-y: auto;
+        border-radius: 12px 12px 0 0;
+        z-index: 100;
+      }
+    }
+
+    /* Products Grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .product-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .product-image {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    .product-name {
+      font-weight: 600;
+      color: var(--secondary);
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .product-price {
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .btn-add-cart {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .btn-add-cart:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Cart Section */
+    .cart-section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 1.5rem;
+    }
+    .cart-header {
+      background: var(--secondary);
+      color: white;
+      padding: 1rem;
+      border-radius: 12px 12px 0 0;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cart-body {
+      padding: 1rem;
+    }
+    .cart-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 2rem;
+    }
+    .cart-item {
       display: flex;
       align-items: center;
       gap: 1rem;
-      border-bottom: 1px solid #333;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
     }
-    .method-badge {
-      font-family: 'Fira Code', monospace;
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    .cart-item-image {
+      font-size: 2rem;
+    }
+    .cart-item-info {
+      flex: 1;
+    }
+    .cart-item-name {
       font-weight: 600;
       font-size: 0.9rem;
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
-      min-width: 70px;
+    }
+    .cart-item-price {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .cart-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .qty-input {
+      width: 50px;
+      padding: 0.25rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
       text-align: center;
+      font-size: 0.9rem;
+    }
+    .btn-qty {
+      background: var(--info);
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .btn-qty:hover {
+      background: #2563eb;
+    }
+    .btn-remove {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+    .btn-remove:hover {
+      background: #b91c1c;
+    }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--background);
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-radius: 0 0 12px 12px;
+    }
+    .btn-clear-cart {
+      background: #6b7280;
+      color: white;
+      border: none;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .btn-clear-cart:hover {
+      background: #4b5563;
+    }
+
+    /* Network Inspector Panel */
+    .inspector-panel {
+      background: #1e1e1e;
+      border-radius: 12px;
+      overflow: hidden;
+      position: sticky;
+      top: 1rem;
+    }
+    .inspector-header {
+      background: #2d2d2d;
+      color: #e5e7eb;
+      padding: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid #404040;
+    }
+    .inspector-body {
+      padding: 1rem;
+    }
+    .inspector-section {
+      margin-bottom: 1.5rem;
+    }
+    .inspector-section:last-child {
+      margin-bottom: 0;
+    }
+    .inspector-label {
+      color: #9ca3af;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .request-display {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .request-method {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      margin-right: 0.5rem;
     }
     .method-get { background: #22c55e20; color: #22c55e; }
     .method-post { background: #3b82f620; color: #3b82f6; }
     .method-put { background: #f59e0b20; color: #f59e0b; }
     .method-delete { background: #ef444420; color: #ef4444; }
-    .command-desc {
-      color: #9ca3af;
-      font-size: 0.9rem;
+    .request-path {
+      color: #fbbf24;
     }
-    .command-body {
-      padding: 1.5rem;
+    .request-body {
+      margin-top: 0.75rem;
+      color: #a78bfa;
+      white-space: pre-wrap;
+      word-break: break-all;
     }
-    .command-code {
+    .request-placeholder {
+      color: #6b7280;
+      font-style: italic;
+    }
+    .curl-section {
       background: #0d0d0d;
       border-radius: 8px;
-      padding: 1rem 1.25rem;
+      padding: 1rem;
       font-family: 'Fira Code', monospace;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #e5e7eb;
       overflow-x: auto;
       position: relative;
     }
-    .command-code .prompt { color: #22c55e; }
-    .command-code .flag { color: #60a5fa; }
-    .command-code .url { color: #fbbf24; }
-    .command-code .string { color: #f472b6; }
+    .curl-prompt {
+      color: #22c55e;
+    }
+    .curl-flag {
+      color: #60a5fa;
+    }
+    .curl-url {
+      color: #fbbf24;
+    }
+    .curl-data {
+      color: #f472b6;
+    }
     .copy-btn {
       position: absolute;
       top: 0.5rem;
@@ -63,45 +282,71 @@
       background: #374151;
       border: none;
       color: #9ca3af;
-      padding: 0.4rem 0.8rem;
+      padding: 0.3rem 0.6rem;
       border-radius: 4px;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       cursor: pointer;
-      transition: all 0.2s;
     }
     .copy-btn:hover {
       background: #4b5563;
-      color: #fff;
-    }
-    .intro-box {
-      background: linear-gradient(135deg, var(--secondary) 0%, #2d4a6f 100%);
-      border-radius: 12px;
-      padding: 2rem;
       color: white;
-      margin-bottom: 2rem;
     }
-    .intro-box h2 {
-      margin-bottom: 0.5rem;
+    .response-section {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #86efac;
+      max-height: 150px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
     }
-    .intro-box p {
-      opacity: 0.9;
-      margin-bottom: 1rem;
+    .response-placeholder {
+      color: #6b7280;
+      font-style: italic;
     }
-    .intro-box code {
-      background: rgba(255,255,255,0.15);
-      padding: 0.2rem 0.5rem;
+
+    /* Reference Section */
+    .reference-section {
+      background: #2d2d2d;
+      border-top: 1px solid #404040;
+      padding: 1rem;
+    }
+    .reference-title {
+      color: #9ca3af;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+    .reference-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .reference-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: #d1d5db;
+      cursor: pointer;
+      padding: 0.25rem;
       border-radius: 4px;
-      font-size: 0.9rem;
+      transition: background 0.2s;
     }
-    .methods-table {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
+    .reference-item:hover {
+      background: #374151;
     }
-    .methods-table h3 {
-      margin-bottom: 1rem;
-      color: var(--secondary);
+    .ref-method {
+      font-family: 'Fira Code', monospace;
+      font-weight: 600;
+      width: 55px;
+    }
+    .ref-path {
+      color: #9ca3af;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
     }
   </style>
 </head>
@@ -114,167 +359,307 @@
       </a>
       <nav class="nav">
         <a href="/" class="nav-link">หน้าแรก</a>
-        <a href="/lab01" class="nav-link active">API Tester</a>
+        <a href="/lab01" class="nav-link active">ตะกร้าสินค้า</a>
       </nav>
-      <div class="header-slogan">Developer Portal</div>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
     </div>
   </header>
 
   <div class="page-header">
     <div class="container">
-      <h1 class="page-title">API Tester</h1>
-      <p class="page-subtitle">ทดสอบ HTTP Methods ผ่าน Terminal</p>
+      <h1 class="page-title">สินค้าแนะนำ</h1>
+      <p class="page-subtitle">เลือกซื้อสินค้าและดู HTTP Request ที่เกิดขึ้น</p>
     </div>
   </div>
 
   <main class="main">
     <div class="container page-content">
+      <div class="lab-layout">
+        <!-- Left: Shopping Area -->
+        <div class="shopping-area">
+          <!-- Products Grid -->
+          <div class="products-grid" id="productsGrid">
+            <% products.forEach(product => { %>
+              <div class="product-card">
+                <div class="product-image"><%= product.image %></div>
+                <div class="product-name"><%= product.name %></div>
+                <div class="product-price">฿<%= product.price.toLocaleString() %></div>
+                <button class="btn-add-cart" onclick="addToCart(<%= product.id %>)">
+                  เพิ่มลงตะกร้า
+                </button>
+              </div>
+            <% }) %>
+          </div>
 
-      <!-- Introduction -->
-      <div class="intro-box">
-        <h2>🖥️ ใช้ Terminal ของคุณ</h2>
-        <p>Lab นี้ต้องพิมพ์คำสั่ง <code>curl</code> ใน Terminal ด้วยตัวเอง ไม่มีปุ่มให้กด!</p>
-        <p>เปิด Terminal (Command Prompt, PowerShell, หรือ Terminal) แล้วพิมพ์คำสั่งด้านล่าง</p>
-      </div>
-
-      <!-- Methods Reference -->
-      <div class="methods-table">
-        <h3>📚 HTTP Methods Reference</h3>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Method</th>
-              <th>การใช้งาน</th>
-              <th>ตัวอย่าง</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="method-badge method-get">GET</span></td>
-              <td>ดึงข้อมูล (Read)</td>
-              <td>ดูรายการสินค้า, ดูโปรไฟล์</td>
-            </tr>
-            <tr>
-              <td><span class="method-badge method-post">POST</span></td>
-              <td>สร้างข้อมูลใหม่ (Create)</td>
-              <td>สมัครสมาชิก, โพสต์ความคิดเห็น</td>
-            </tr>
-            <tr>
-              <td><span class="method-badge method-put">PUT</span></td>
-              <td>อัปเดตข้อมูล (Update)</td>
-              <td>แก้ไขโปรไฟล์, อัปเดตสินค้า</td>
-            </tr>
-            <tr>
-              <td><span class="method-badge method-delete">DELETE</span></td>
-              <td>ลบข้อมูล (Delete)</td>
-              <td>ลบสินค้า, ลบความคิดเห็น</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- GET Command -->
-      <div class="command-card">
-        <div class="command-header">
-          <span class="method-badge method-get">GET</span>
-          <span class="command-desc">ดึงข้อมูลจาก API</span>
+          <!-- Cart Section -->
+          <div class="cart-section">
+            <div class="cart-header">
+              <span>🛒 ตะกร้าสินค้า (<span id="cartCount"><%= cart.length %></span> รายการ)</span>
+              <button class="btn-clear-cart" onclick="clearCart()">ล้างตะกร้า</button>
+            </div>
+            <div class="cart-body" id="cartBody">
+              <% if (cart.length === 0) { %>
+                <div class="cart-empty">ยังไม่มีสินค้าในตะกร้า</div>
+              <% } else { %>
+                <% cart.forEach(item => { %>
+                  <div class="cart-item" data-cart-id="<%= item.id %>">
+                    <div class="cart-item-image"><%= item.image %></div>
+                    <div class="cart-item-info">
+                      <div class="cart-item-name"><%= item.name %></div>
+                      <div class="cart-item-price">฿<%= item.price.toLocaleString() %> x <%= item.quantity %></div>
+                    </div>
+                    <div class="cart-item-actions">
+                      <input type="number" class="qty-input" value="<%= item.quantity %>" min="1" id="qty-<%= item.id %>">
+                      <button class="btn-qty" onclick="updateQuantity(<%= item.id %>)">แก้ไข</button>
+                      <button class="btn-remove" onclick="removeFromCart(<%= item.id %>)">ลบ</button>
+                    </div>
+                  </div>
+                <% }) %>
+              <% } %>
+            </div>
+            <div class="cart-total">
+              <span>รวมทั้งหมด</span>
+              <span id="cartTotal">฿<%= cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString() %></span>
+            </div>
+          </div>
         </div>
-        <div class="command-body">
-          <div class="command-code">
-            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-            <span class="prompt">$</span> curl <span class="url">http://10.10.61.87/lab01/api/test</span>
+
+        <!-- Right: Network Inspector -->
+        <div class="inspector-panel">
+          <div class="inspector-header">
+            🔍 Network Inspector
+          </div>
+          <div class="inspector-body">
+            <!-- Last Request -->
+            <div class="inspector-section">
+              <div class="inspector-label">Request ล่าสุด</div>
+              <div class="request-display" id="requestDisplay">
+                <span class="request-placeholder">คลิกปุ่มบนหน้าเว็บเพื่อดู Request</span>
+              </div>
+            </div>
+
+            <!-- Curl Command -->
+            <div class="inspector-section">
+              <div class="inspector-label">ลองพิมพ์ใน Terminal</div>
+              <div class="curl-section" id="curlSection">
+                <button class="copy-btn" onclick="copyCurl()">Copy</button>
+                <span class="request-placeholder">curl command จะแสดงที่นี่</span>
+              </div>
+            </div>
+
+            <!-- Response -->
+            <div class="inspector-section">
+              <div class="inspector-label">Response จาก Server</div>
+              <div class="response-section" id="responseSection">
+                <span class="response-placeholder">Response จะแสดงที่นี่</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Reference -->
+          <div class="reference-section">
+            <div class="reference-title">📚 API Endpoints ทั้งหมด</div>
+            <div class="reference-list">
+              <div class="reference-item" onclick="fetchProducts()">
+                <span class="ref-method method-get">GET</span>
+                <span class="ref-path">/lab01/products</span>
+              </div>
+              <div class="reference-item" onclick="fetchCart()">
+                <span class="ref-method method-get">GET</span>
+                <span class="ref-path">/lab01/cart</span>
+              </div>
+              <div class="reference-item">
+                <span class="ref-method method-post">POST</span>
+                <span class="ref-path">/lab01/cart</span>
+              </div>
+              <div class="reference-item">
+                <span class="ref-method method-put">PUT</span>
+                <span class="ref-path">/lab01/cart/:id</span>
+              </div>
+              <div class="reference-item">
+                <span class="ref-method method-delete">DELETE</span>
+                <span class="ref-path">/lab01/cart/:id</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <!-- POST Command -->
-      <div class="command-card">
-        <div class="command-header">
-          <span class="method-badge method-post">POST</span>
-          <span class="command-desc">ส่งข้อมูลใหม่ไปยัง API</span>
-        </div>
-        <div class="command-body">
-          <div class="command-code">
-            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-<span class="prompt">$</span> curl <span class="flag">-X POST</span> <span class="url">http://10.10.61.87/lab01/api/test</span> \
-     <span class="flag">-H</span> <span class="string">"Content-Type: application/json"</span> \
-     <span class="flag">-d</span> <span class="string">'{"name":"test","email":"test@example.com"}'</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- PUT Command -->
-      <div class="command-card">
-        <div class="command-header">
-          <span class="method-badge method-put">PUT</span>
-          <span class="command-desc">อัปเดตข้อมูลที่มีอยู่</span>
-        </div>
-        <div class="command-body">
-          <div class="command-code">
-            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-<span class="prompt">$</span> curl <span class="flag">-X PUT</span> <span class="url">http://10.10.61.87/lab01/api/test</span> \
-     <span class="flag">-H</span> <span class="string">"Content-Type: application/json"</span> \
-     <span class="flag">-d</span> <span class="string">'{"id":1,"name":"updated"}'</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- DELETE Command -->
-      <div class="command-card">
-        <div class="command-header">
-          <span class="method-badge method-delete">DELETE</span>
-          <span class="command-desc">ลบข้อมูล</span>
-        </div>
-        <div class="command-body">
-          <div class="command-code">
-            <button class="copy-btn" onclick="copyCommand(this)">Copy</button>
-<span class="prompt">$</span> curl <span class="flag">-X DELETE</span> <span class="url">"http://10.10.61.87/lab01/api/test?id=1"</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Expected Output -->
-      <div class="card">
-        <div class="card-header">📤 ตัวอย่าง Response ที่จะได้รับ</div>
-        <div class="card-body">
-          <div class="command-code" style="position: static;">
-<pre style="margin: 0; color: #e5e7eb;">{
-  "method": "POST",
-  "path": "/api/test",
-  "headers": {
-    "content-type": "application/json",
-    "user-agent": "curl/7.68.0",
-    "host": "10.10.61.87"
-  },
-  "query": {},
-  "body": {
-    "name": "test",
-    "email": "test@example.com"
-  },
-  "timestamp": "2026-04-18T12:00:00.000Z"
-}</pre>
-          </div>
-        </div>
-      </div>
-
     </div>
   </main>
 
   <footer class="footer">
     <div class="container">
       <div class="footer-content">
-        <p class="footer-text">© 2569 ThaiMart Developer Portal</p>
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
       </div>
     </div>
   </footer>
 
   <script>
-    function copyCommand(btn) {
-      const codeBlock = btn.parentElement;
-      const text = codeBlock.innerText.replace('Copy', '').replace('$', '').trim();
-      navigator.clipboard.writeText(text);
+    const BASE_URL = window.location.origin;
+    let lastCurlCommand = '';
+
+    // Update the inspector panel
+    function updateInspector(method, path, body, response) {
+      // Update request display
+      const requestDisplay = document.getElementById('requestDisplay');
+      const methodClass = `method-${method.toLowerCase()}`;
+      let bodyHtml = '';
+      if (body && Object.keys(body).length > 0) {
+        bodyHtml = `<div class="request-body">${JSON.stringify(body, null, 2)}</div>`;
+      }
+      requestDisplay.innerHTML = `
+        <span class="request-method ${methodClass}">${method}</span>
+        <span class="request-path">${path}</span>
+        ${bodyHtml}
+      `;
+
+      // Update curl command
+      const curlSection = document.getElementById('curlSection');
+      let curlCmd = `<span class="curl-prompt">$</span> curl `;
+
+      if (method !== 'GET') {
+        curlCmd += `<span class="curl-flag">-X ${method}</span> `;
+      }
+
+      curlCmd += `<span class="curl-url">"${BASE_URL}${path}"</span>`;
+
+      if (body && Object.keys(body).length > 0) {
+        curlCmd += ` \\\n     <span class="curl-flag">-H</span> "Content-Type: application/json" \\\n     <span class="curl-flag">-d</span> <span class="curl-data">'${JSON.stringify(body)}'</span>`;
+      }
+
+      // Store plain curl command for copy
+      lastCurlCommand = `curl `;
+      if (method !== 'GET') {
+        lastCurlCommand += `-X ${method} `;
+      }
+      lastCurlCommand += `"${BASE_URL}${path}"`;
+      if (body && Object.keys(body).length > 0) {
+        lastCurlCommand += ` -H "Content-Type: application/json" -d '${JSON.stringify(body)}'`;
+      }
+
+      curlSection.innerHTML = `<button class="copy-btn" onclick="copyCurl()">Copy</button>${curlCmd}`;
+
+      // Update response
+      const responseSection = document.getElementById('responseSection');
+      responseSection.textContent = JSON.stringify(response, null, 2);
+    }
+
+    // Copy curl command
+    function copyCurl() {
+      navigator.clipboard.writeText(lastCurlCommand);
+      const btn = document.querySelector('.curl-section .copy-btn');
       btn.textContent = 'Copied!';
       setTimeout(() => btn.textContent = 'Copy', 2000);
+    }
+
+    // Refresh cart display
+    function refreshCart(cartData) {
+      const cartBody = document.getElementById('cartBody');
+      const cartCount = document.getElementById('cartCount');
+      const cartTotal = document.getElementById('cartTotal');
+
+      if (!cartData || cartData.length === 0) {
+        cartBody.innerHTML = '<div class="cart-empty">ยังไม่มีสินค้าในตะกร้า</div>';
+        cartCount.textContent = '0';
+        cartTotal.textContent = '฿0';
+        return;
+      }
+
+      let html = '';
+      let total = 0;
+      cartData.forEach(item => {
+        total += item.price * item.quantity;
+        html += `
+          <div class="cart-item" data-cart-id="${item.id}">
+            <div class="cart-item-image">${item.image}</div>
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-price">฿${item.price.toLocaleString()} x ${item.quantity}</div>
+            </div>
+            <div class="cart-item-actions">
+              <input type="number" class="qty-input" value="${item.quantity}" min="1" id="qty-${item.id}">
+              <button class="btn-qty" onclick="updateQuantity(${item.id})">แก้ไข</button>
+              <button class="btn-remove" onclick="removeFromCart(${item.id})">ลบ</button>
+            </div>
+          </div>
+        `;
+      });
+
+      cartBody.innerHTML = html;
+      cartCount.textContent = cartData.length;
+      cartTotal.textContent = `฿${total.toLocaleString()}`;
+    }
+
+    // GET /lab01/products
+    async function fetchProducts() {
+      const response = await fetch('/lab01/products');
+      const data = await response.json();
+      updateInspector('GET', '/lab01/products', null, data);
+    }
+
+    // GET /lab01/cart
+    async function fetchCart() {
+      const response = await fetch('/lab01/cart');
+      const data = await response.json();
+      updateInspector('GET', '/lab01/cart', null, data);
+    }
+
+    // POST /lab01/cart - Add to cart
+    async function addToCart(productId) {
+      const body = { product_id: productId, quantity: 1 };
+      const response = await fetch('/lab01/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      updateInspector('POST', '/lab01/cart', body, data);
+      if (data.cart) {
+        refreshCart(data.cart);
+      }
+    }
+
+    // PUT /lab01/cart/:id - Update quantity
+    async function updateQuantity(cartId) {
+      const qtyInput = document.getElementById(`qty-${cartId}`);
+      const quantity = parseInt(qtyInput.value);
+      const body = { quantity: quantity };
+      const path = `/lab01/cart/${cartId}`;
+
+      const response = await fetch(path, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      updateInspector('PUT', path, body, data);
+      if (data.cart) {
+        refreshCart(data.cart);
+      }
+    }
+
+    // DELETE /lab01/cart/:id - Remove from cart
+    async function removeFromCart(cartId) {
+      const path = `/lab01/cart/${cartId}`;
+      const response = await fetch(path, {
+        method: 'DELETE'
+      });
+      const data = await response.json();
+      updateInspector('DELETE', path, null, data);
+      if (data.cart) {
+        refreshCart(data.cart);
+      }
+    }
+
+    // Clear entire cart
+    async function clearCart() {
+      const response = await fetch('/lab01/cart/clear', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      updateInspector('POST', '/lab01/cart/clear', null, data);
+      refreshCart([]);
     }
   </script>
 </body>

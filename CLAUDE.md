@@ -6,6 +6,10 @@
 
 **Slogan:** ช้อปสนุก ส่งไว ทั่วไทย
 
+**Repository:** https://github.com/phwrscr1pt/WEBlab.git
+
+**Status:** ✅ Deployed and Running
+
 ## Tech Stack
 
 | Component | Technology |
@@ -84,10 +88,14 @@ ssh thaimart-lab
 | Homepage (Hub) | http://10.10.61.87 |
 | Cookie Logger | http://10.10.61.87/logger |
 | Lab 01 - HTTP Methods | http://10.10.61.87/lab01 |
-| Lab 04 - Seller Portal | http://10.10.61.87/lab04 |
-| Lab 05 - Staff Directory | http://10.10.61.87/lab05 |
-| Lab 07 - Product Search | http://10.10.61.87/lab07 |
-| Lab 09 - Reviews | http://10.10.61.87/lab09 |
+| Lab 02 - Member Login | http://10.10.61.87/lab02 |
+| Lab 03 - SQL Playground | http://10.10.61.87/lab03 |
+| Lab 04 - Seller Portal (SQLi) | http://10.10.61.87/lab04 |
+| Lab 05 - Staff Directory (SQLi) | http://10.10.61.87/lab05 |
+| Lab 06 - Categories (SQLmap) | http://10.10.61.87/lab06?id=1 |
+| Lab 07 - Product Search (XSS) | http://10.10.61.87/lab07 |
+| Lab 08 - Member Search (XSS) | http://10.10.61.87/lab08 |
+| Lab 09 - Reviews (Stored XSS) | http://10.10.61.87/lab09 |
 
 ### Quick Deploy
 
@@ -95,7 +103,10 @@ ssh thaimart-lab
 # On Lab VM
 cd ~/ThaiMart-Labs
 git pull
-docker-compose up -d
+sudo docker-compose up -d
+
+# Or remotely via jump host
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && git pull && sudo docker-compose up -d"
 ```
 
 ## Color Scheme
@@ -265,13 +276,16 @@ docker-compose down -v && docker-compose up -d
 docker-compose up -d --build
 
 # Deploy to Lab VM (from local machine)
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && git pull && docker-compose up -d"
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && git pull && sudo docker-compose up -d"
 
 # View logs on Lab VM
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && docker-compose logs -f"
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo docker-compose logs -f"
 
 # Reset Lab VM database
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && docker-compose down -v && docker-compose up -d"
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo docker-compose down -v && sudo docker-compose up -d"
+
+# Check container status
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo docker-compose ps"
 ```
 
 ---
@@ -283,3 +297,7 @@ ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && docker-
 - Deploy only on isolated networks
 - Never use in production
 - Teach responsible disclosure
+
+---
+
+*Last Updated: 2026-04-18*

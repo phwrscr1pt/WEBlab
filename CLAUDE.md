@@ -16,6 +16,88 @@
 | Templates | EJS |
 | Container | Docker Compose |
 
+---
+
+## Deployment
+
+- **Server:** HPE ProLiant Gen 9 (Proxmox VM)
+- **OS:** Ubuntu 22.04 Desktop
+- **Method:** Docker containers
+
+### Lab VM Details
+
+| Item | Value |
+|------|-------|
+| VM Name | `weblab` |
+| VM IP | `10.10.61.87` |
+| VM User | `asdf` |
+| SSH Auth | SSH Key (no password) |
+| Gateway | `10.10.61.4` |
+| Interface | `enp6s18` |
+
+### Network Topology
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                              INTERNET                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    │
+                                    │ Tailscale VPN
+                                    ▼
+┌─────────────────────┐      ┌─────────────────────┐      ┌─────────────────────┐
+│   Claude's Machine  │      │    Jump Host        │      │   ThaiMart Lab VM   │
+│   (Windows)         │ ───► │    (root-agent)     │ ───► │     (weblab)        │
+│                     │      │                     │      │                     │
+│   Can reach:        │ SSH  │   IP: 100.107.182.15│ SSH  │   IP: 10.10.61.87   │
+│   - Tailscale IPs   │      │   User: root-agent  │      │   User: asdf        │
+│   - Internet        │      │                     │      │                     │
+│                     │      │   Can reach:        │      │   Services:         │
+│   Cannot reach:     │      │   - 10.10.61.x LAN  │      │   - Web: port 80    │
+│   - 10.10.61.x LAN  │      │   - Internet        │      │   - Logger: /logger │
+│                     │      │   - Tailscale       │      │   - DB: internal    │
+└─────────────────────┘      └─────────────────────┘      └─────────────────────┘
+```
+
+### SSH Access
+
+```bash
+# Direct command (via jump host)
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87
+
+# Run command on lab VM
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "docker-compose ps"
+
+# SSH Config (~/.ssh/config) for easy access
+Host thaimart-lab
+    HostName 10.10.61.87
+    User asdf
+    ProxyJump root-agent@100.107.182.15
+
+# Then simply:
+ssh thaimart-lab
+```
+
+### Access URLs
+
+| Service | URL |
+|---------|-----|
+| Homepage (Hub) | http://10.10.61.87 |
+| Cookie Logger | http://10.10.61.87/logger |
+| Lab 01 - HTTP Methods | http://10.10.61.87/lab01 |
+| Lab 04 - Seller Portal | http://10.10.61.87/lab04 |
+| Lab 05 - Staff Directory | http://10.10.61.87/lab05 |
+| Lab 07 - Product Search | http://10.10.61.87/lab07 |
+| Lab 09 - Reviews | http://10.10.61.87/lab09 |
+
+### Quick Deploy
+
+```bash
+# On Lab VM
+cd ~/ThaiMart-Labs
+git pull
+docker-compose up -d
+```
+
 ## Color Scheme
 
 ```css
@@ -172,7 +254,7 @@ ThaiMart-Labs/
 ## Commands
 
 ```bash
-# Development
+# Local Development
 docker-compose up -d
 docker-compose logs -f web
 
@@ -181,7 +263,18 @@ docker-compose down -v && docker-compose up -d
 
 # Rebuild
 docker-compose up -d --build
+
+# Deploy to Lab VM (from local machine)
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && git pull && docker-compose up -d"
+
+# View logs on Lab VM
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && docker-compose logs -f"
+
+# Reset Lab VM database
+ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && docker-compose down -v && docker-compose up -d"
 ```
+
+---
 
 ## Security Notes
 

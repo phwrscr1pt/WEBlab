@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .api-tester {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 900px) {
+      .api-tester { grid-template-columns: 1fr; }
+    }
+    .method-select {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .method-btn {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .method-btn:hover { border-color: var(--primary); }
+    .method-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .method-btn.get { color: #22c55e; }
+    .method-btn.post { color: #3b82f6; }
+    .method-btn.put { color: #f59e0b; }
+    .method-btn.delete { color: #ef4444; }
+    .method-btn.get.active { background: #22c55e; color: white; border-color: #22c55e; }
+    .method-btn.post.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .method-btn.put.active { background: #f59e0b; color: white; border-color: #f59e0b; }
+    .method-btn.delete.active { background: #ef4444; color: white; border-color: #ef4444; }
+    .curl-box {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      overflow-x: auto;
+    }
+    .curl-box .method { color: #dcdcaa; }
+    .curl-box .url { color: #ce9178; }
+    .curl-box .flag { color: #569cd6; }
+    .response-panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .response-header {
+      background: var(--secondary);
+      color: white;
+      padding: 1rem;
+      font-weight: 600;
+    }
+    .response-body {
+      padding: 1rem;
+    }
+    .response-json {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      max-height: 500px;
+      overflow: auto;
+    }
+    .json-key { color: #9cdcfe; }
+    .json-string { color: #ce9178; }
+    .json-number { color: #b5cea8; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab01" class="nav-link active">API Tester</a>
+      </nav>
+      <div class="header-slogan">Developer Portal</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">API Tester</h1>
+      <p class="page-subtitle">ทดสอบ HTTP Methods สำหรับ ThaiMart API</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="api-tester">
+        <!-- Request Panel -->
+        <div>
+          <div class="card">
+            <div class="card-header">ส่ง Request</div>
+            <div class="card-body">
+              <form id="apiForm" action="/lab01/api/test" method="POST">
+                <div class="method-select">
+                  <button type="button" class="method-btn get active" data-method="GET">GET</button>
+                  <button type="button" class="method-btn post" data-method="POST">POST</button>
+                  <button type="button" class="method-btn put" data-method="PUT">PUT</button>
+                  <button type="button" class="method-btn delete" data-method="DELETE">DELETE</button>
+                </div>
+                <input type="hidden" name="_method" id="methodInput" value="GET">
+
+                <div class="form-group">
+                  <label class="form-label">Endpoint</label>
+                  <input type="text" class="form-input" id="endpoint" value="/lab01/api/test" readonly>
+                </div>
+
+                <div class="form-group" id="bodyGroup" style="display: none;">
+                  <label class="form-label">Request Body (JSON)</label>
+                  <textarea class="form-textarea" id="bodyInput" name="data" placeholder='{"key": "value"}'></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">ส่ง Request</button>
+              </form>
+
+              <div class="curl-box" id="curlCommand">
+                <span class="method">curl</span> <span class="flag">-X</span> GET <span class="url">"http://localhost/lab01/api/test"</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Response Panel -->
+        <div>
+          <div class="response-panel">
+            <div class="response-header">Response</div>
+            <div class="response-body">
+              <% if (result) { %>
+                <div class="response-json">
+                  <pre><%= JSON.stringify(result, null, 2) %></pre>
+                </div>
+              <% } else { %>
+                <p class="text-muted text-center p-3">ยังไม่มี Response - กดส่ง Request เพื่อดูผลลัพธ์</p>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="card mt-2">
+            <div class="card-header">HTTP Methods</div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>การใช้งาน</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong style="color: #22c55e;">GET</strong></td>
+                    <td>ดึงข้อมูล (Read)</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color: #3b82f6;">POST</strong></td>
+                    <td>สร้างข้อมูลใหม่ (Create)</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color: #f59e0b;">PUT</strong></td>
+                    <td>อัปเดตข้อมูล (Update)</td>
+                  </tr>
+                  <tr>
+                    <td><strong style="color: #ef4444;">DELETE</strong></td>
+                    <td>ลบข้อมูล (Delete)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Developer Portal</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const methodBtns = document.querySelectorAll('.method-btn');
+      const methodInput = document.getElementById('methodInput');
+      const bodyGroup = document.getElementById('bodyGroup');
+      const curlCommand = document.getElementById('curlCommand');
+      const form = document.getElementById('apiForm');
+
+      function updateCurl(method) {
+        const baseUrl = window.location.origin + '/lab01/api/test';
+        let cmd = `<span class="method">curl</span> <span class="flag">-X</span> ${method} <span class="url">"${baseUrl}"</span>`;
+
+        if (method === 'POST' || method === 'PUT') {
+          cmd += ` <span class="flag">-H</span> "Content-Type: application/json" <span class="flag">-d</span> <span class="url">'{"key": "value"}'</span>`;
+        }
+
+        curlCommand.innerHTML = cmd;
+      }
+
+      methodBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          methodBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+
+          const method = this.dataset.method;
+          methodInput.value = method;
+          form.method = method === 'GET' ? 'GET' : 'POST';
+
+          if (method === 'POST' || method === 'PUT') {
+            bodyGroup.style.display = 'block';
+          } else {
+            bodyGroup.style.display = 'none';
+          }
+
+          updateCurl(method);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

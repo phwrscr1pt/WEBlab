@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab02" class="nav-link active">สมาชิก</a>
+        <% if (isLoggedIn) { %>
+          <a href="/lab02/profile" class="nav-link">โปรไฟล์</a>
+          <a href="/lab02/logout" class="nav-link">ออกจากระบบ</a>
+        <% } else { %>
+          <a href="/lab02/login" class="nav-link">เข้าสู่ระบบ</a>
+        <% } %>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">ระบบสมาชิก ThaiMart</h1>
+      <p class="page-subtitle">เข้าสู่ระบบเพื่อรับสิทธิพิเศษมากมาย</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <% if (isLoggedIn) { %>
+        <div class="alert alert-success">
+          <strong>สวัสดี, <%= username %>!</strong> คุณเข้าสู่ระบบแล้ว
+        </div>
+        <div class="text-center mt-3">
+          <a href="/lab02/profile" class="btn btn-primary">ไปยังโปรไฟล์</a>
+          <a href="/lab02/logout" class="btn btn-outline">ออกจากระบบ</a>
+        </div>
+      <% } else { %>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">สิทธิประโยชน์สมาชิก</div>
+            <div class="card-body">
+              <ul style="list-style: none; padding: 0;">
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+                  🎁 รับส่วนลด 10% ทุกออเดอร์แรก
+                </li>
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+                  🚚 ส่งฟรีทุกออเดอร์ที่ครบ 300 บาท
+                </li>
+                <li style="padding: 0.75rem 0; border-bottom: 1px solid var(--border);">
+                  💰 สะสมแต้มแลกของรางวัล
+                </li>
+                <li style="padding: 0.75rem 0;">
+                  📦 ติดตามพัสดุได้ตลอด 24 ชม.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">เข้าสู่ระบบ</div>
+            <div class="card-body text-center">
+              <p class="text-muted mb-3">เข้าสู่ระบบเพื่อรับสิทธิพิเศษ</p>
+              <a href="/lab02/login" class="btn btn-primary btn-lg">เข้าสู่ระบบ</a>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

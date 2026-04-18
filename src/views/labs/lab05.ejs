@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab05" class="nav-link active">Staff Directory</a>
+      </nav>
+      <div class="header-slogan">Internal Portal</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Staff Directory</h1>
+      <p class="page-subtitle">ค้นหาข้อมูลพนักงาน ThaiMart</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <!-- Search Form -->
+      <div class="card mb-3">
+        <div class="card-body">
+          <form action="/lab05" method="GET">
+            <div class="search-form">
+              <input type="text" name="q" class="search-input" placeholder="ค้นหาชื่อพนักงาน..." value="<%= search %>">
+              <button type="submit" class="btn btn-primary search-btn">ค้นหา</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <% if (error) { %>
+        <div class="alert alert-danger">
+          <strong>Database Error:</strong> <%= error %>
+        </div>
+      <% } %>
+
+      <% if (search) { %>
+        <p class="text-muted mb-2">ผลการค้นหา "<%= search %>" - พบ <%= staff.length %> รายการ</p>
+      <% } %>
+
+      <!-- Results -->
+      <div class="card">
+        <div class="card-header">รายชื่อพนักงาน</div>
+        <div class="card-body">
+          <% if (staff.length > 0) { %>
+            <div class="table-container">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>ชื่อ-นามสกุล</th>
+                    <th>แผนก</th>
+                    <th>ตำแหน่ง</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% staff.forEach(person => { %>
+                    <tr>
+                      <td><%= person.id %></td>
+                      <td><%= person.name %></td>
+                      <td><%= person.department %></td>
+                      <td><%= person.position %></td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          <% } else if (search) { %>
+            <p class="text-muted text-center p-3">ไม่พบพนักงานที่ค้นหา</p>
+          <% } else { %>
+            <p class="text-muted text-center p-3">กรุณากรอกชื่อพนักงานที่ต้องการค้นหา</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="card mt-3">
+        <div class="card-header">แผนก</div>
+        <div class="card-body">
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <a href="/lab05?q=IT" class="btn btn-sm btn-outline">IT</a>
+            <a href="/lab05?q=Marketing" class="btn btn-sm btn-outline">Marketing</a>
+            <a href="/lab05?q=Sales" class="btn btn-sm btn-outline">Sales</a>
+            <a href="/lab05?q=HR" class="btn btn-sm btn-outline">HR</a>
+            <a href="/lab05?q=Finance" class="btn btn-sm btn-outline">Finance</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Internal Portal</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

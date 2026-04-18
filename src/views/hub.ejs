@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThaiMart - ช้อปสนุก ส่งไว ทั่วไทย</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link active">หน้าแรก</a>
+        <a href="/lab07" class="nav-link">ค้นหาสินค้า</a>
+        <a href="/lab09" class="nav-link">รีวิว</a>
+        <a href="/lab02" class="nav-link">เข้าสู่ระบบ</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero-title">ยินดีต้อนรับสู่ ThaiMart</h1>
+        <p class="hero-subtitle">แพลตฟอร์ม E-Commerce อันดับ 1 ของไทย</p>
+        <p class="hero-desc">ช้อปปิ้งออนไลน์ง่ายๆ สินค้าหลากหลาย ส่งไวทั่วไทย</p>
+      </div>
+    </section>
+
+    <!-- Lab Cards -->
+    <section class="labs-section">
+      <div class="container">
+        <h2 class="section-title">บริการของเรา</h2>
+        <div class="labs-grid">
+          <% labs.forEach(lab => { %>
+            <a href="<%= lab.path %>" class="lab-card">
+              <div class="lab-header">
+                <span class="lab-number"><%= lab.number %></span>
+                <span class="lab-badge badge-<%= lab.topicColor %>"><%= lab.topic %></span>
+              </div>
+              <h3 class="lab-title"><%= lab.title %></h3>
+              <p class="lab-desc"><%= lab.description %></p>
+              <div class="lab-footer">
+                <span class="lab-link">เข้าใช้งาน →</span>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+      <div class="container">
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🚚</div>
+            <h3>ส่งฟรีทั่วไทย</h3>
+            <p>ช้อปครบ 500 บาท ส่งฟรีทันที</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💳</div>
+            <h3>ชำระเงินปลอดภัย</h3>
+            <p>รองรับทุกช่องทางการชำระเงิน</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔄</div>
+            <h3>คืนสินค้าง่าย</h3>
+            <p>คืนสินค้าได้ภายใน 7 วัน</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📞</div>
+            <h3>บริการ 24 ชม.</h3>
+            <p>ทีมงานพร้อมช่วยเหลือตลอดเวลา</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <span class="logo-icon">🛒</span>
+          <span>ThaiMart</span>
+        </div>
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd. สงวนลิขสิทธิ์</p>
+        <p class="footer-text">บริษัท ไทยมาร์ท จำกัด | 123 ถนนสุขุมวิท กรุงเทพฯ 10110</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab08" class="nav-link active">Member</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="login-container">
+        <div class="login-card">
+          <div class="text-center mb-3">
+            <span style="font-size: 3rem;">👤</span>
+            <h2 class="login-title">Member Login</h2>
+          </div>
+
+          <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+
+          <form action="/lab08/login" method="POST">
+            <div class="form-group">
+              <label class="form-label">ชื่อผู้ใช้</label>
+              <input type="text" name="username" class="form-input" placeholder="ชื่อผู้ใช้" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">รหัสผ่าน</label>
+              <input type="password" name="password" class="form-input" placeholder="รหัสผ่าน" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">เข้าสู่ระบบ</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

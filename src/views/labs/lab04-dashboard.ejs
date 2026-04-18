@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab04/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/lab04/logout" class="nav-link">ออกจากระบบ</a>
+      </nav>
+      <div class="header-slogan">Seller Center</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">ยินดีต้อนรับ, <%= user.username %></h1>
+      <p class="page-subtitle">
+        <% if (user.role === 'admin') { %>
+          👑 Administrator
+        <% } else { %>
+          🏪 <%= user.shop_name || 'Seller' %>
+        <% } %>
+      </p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="alert alert-success">
+        <strong>เข้าสู่ระบบสำเร็จ!</strong> คุณเข้าสู่ระบบในฐานะ <strong><%= user.role %></strong>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div class="stat-value">฿125,430</div>
+          <div class="stat-label">ยอดขายเดือนนี้</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">89</div>
+          <div class="stat-label">ออเดอร์ใหม่</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">4.8</div>
+          <div class="stat-label">คะแนนร้านค้า</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">156</div>
+          <div class="stat-label">สินค้าในร้าน</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">ข้อมูลบัญชี</div>
+          <div class="card-body">
+            <table class="table">
+              <tr>
+                <td><strong>Username</strong></td>
+                <td><%= user.username %></td>
+              </tr>
+              <tr>
+                <td><strong>ชื่อร้าน</strong></td>
+                <td><%= user.shop_name || '-' %></td>
+              </tr>
+              <tr>
+                <td><strong>Role</strong></td>
+                <td>
+                  <% if (user.role === 'admin') { %>
+                    <span style="color: var(--danger); font-weight: 600;">👑 <%= user.role %></span>
+                  <% } else { %>
+                    <%= user.role %>
+                  <% } %>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>User ID</strong></td>
+                <td><%= user.id %></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">ออเดอร์ล่าสุด</div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>ยอด</th>
+                  <th>สถานะ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>#TM98765</td>
+                  <td>฿1,290</td>
+                  <td><span class="text-success">จัดส่งแล้ว</span></td>
+                </tr>
+                <tr>
+                  <td>#TM98764</td>
+                  <td>฿450</td>
+                  <td><span style="color: var(--warning);">กำลังจัดส่ง</span></td>
+                </tr>
+                <tr>
+                  <td>#TM98763</td>
+                  <td>฿2,100</td>
+                  <td><span style="color: var(--info);">รอชำระเงิน</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="/lab04/logout" class="btn btn-outline">ออกจากระบบ</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Seller Center</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

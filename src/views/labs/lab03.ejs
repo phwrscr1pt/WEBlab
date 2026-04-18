@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .sql-grid { display: grid; grid-template-columns: 300px 1fr; gap: 2rem; }
+    @media (max-width: 900px) { .sql-grid { grid-template-columns: 1fr; } }
+    .query-btn { width: 100%; margin-bottom: 0.5rem; text-align: left; padding: 0.75rem 1rem; }
+    .query-btn.active { background: var(--primary); color: white; }
+    .query-form { display: none; }
+    .query-form.active { display: block; }
+    .sql-display { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.9rem; margin-bottom: 1rem; }
+    .sql-keyword { color: #569cd6; }
+    .sql-string { color: #ce9178; }
+    .sql-table { color: #4ec9b0; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab03" class="nav-link active">DB Explorer</a>
+      </nav>
+      <div class="header-slogan">Internal Tools</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Employee DB Explorer</h1>
+      <p class="page-subtitle">สำรวจฐานข้อมูลสินค้า ThaiMart</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="sql-grid">
+        <!-- Query Selection Panel -->
+        <div>
+          <div class="card">
+            <div class="card-header">เลือกคำสั่ง SQL</div>
+            <div class="card-body">
+              <button class="btn query-btn <%= queryType === 'SELECT_ALL' ? 'active' : 'btn-outline' %>" onclick="showForm('SELECT_ALL')">
+                SELECT * (ดูทั้งหมด)
+              </button>
+              <button class="btn query-btn <%= queryType === 'SELECT_WHERE' ? 'active' : 'btn-outline' %>" onclick="showForm('SELECT_WHERE')">
+                SELECT WHERE (ค้นหา)
+              </button>
+              <button class="btn query-btn <%= queryType === 'INSERT' ? 'active' : 'btn-outline' %>" onclick="showForm('INSERT')">
+                INSERT (เพิ่มข้อมูล)
+              </button>
+              <button class="btn query-btn <%= queryType === 'UPDATE' ? 'active' : 'btn-outline' %>" onclick="showForm('UPDATE')">
+                UPDATE (แก้ไข)
+              </button>
+              <button class="btn query-btn <%= queryType === 'DELETE' ? 'active' : 'btn-outline' %>" onclick="showForm('DELETE')">
+                DELETE (ลบ)
+              </button>
+            </div>
+          </div>
+
+          <!-- Query Forms -->
+          <div class="card mt-2">
+            <div class="card-header">พารามิเตอร์</div>
+            <div class="card-body">
+              <!-- SELECT ALL -->
+              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'SELECT_ALL' ? 'active' : '' %>" id="form-SELECT_ALL">
+                <input type="hidden" name="queryType" value="SELECT_ALL">
+                <p class="text-muted">ดึงข้อมูลทั้งหมดจากตาราง</p>
+                <button type="submit" class="btn btn-primary mt-2">Execute</button>
+              </form>
+
+              <!-- SELECT WHERE -->
+              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'SELECT_WHERE' ? 'active' : '' %>" id="form-SELECT_WHERE">
+                <input type="hidden" name="queryType" value="SELECT_WHERE">
+                <div class="form-group">
+                  <label class="form-label">Column</label>
+                  <select name="filterColumn" class="form-select">
+                    <option value="id">id</option>
+                    <option value="name">name</option>
+                    <option value="category">category</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Value</label>
+                  <input type="text" name="filterValue" class="form-input" placeholder="ค่าที่ต้องการค้นหา">
+                </div>
+                <button type="submit" class="btn btn-primary">Execute</button>
+              </form>
+
+              <!-- INSERT -->
+              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'INSERT' ? 'active' : '' %>" id="form-INSERT">
+                <input type="hidden" name="queryType" value="INSERT">
+                <div class="form-group">
+                  <label class="form-label">ชื่อสินค้า</label>
+                  <input type="text" name="insertName" class="form-input" placeholder="ชื่อสินค้า">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">ราคา</label>
+                  <input type="number" name="insertPrice" class="form-input" placeholder="0">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">จำนวนคงเหลือ</label>
+                  <input type="number" name="insertStock" class="form-input" placeholder="0">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">หมวดหมู่</label>
+                  <input type="text" name="insertCategory" class="form-input" placeholder="หมวดหมู่">
+                </div>
+                <button type="submit" class="btn btn-primary">Execute</button>
+              </form>
+
+              <!-- UPDATE -->
+              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'UPDATE' ? 'active' : '' %>" id="form-UPDATE">
+                <input type="hidden" name="queryType" value="UPDATE">
+                <div class="form-group">
+                  <label class="form-label">ID ที่ต้องการแก้ไข</label>
+                  <input type="number" name="updateId" class="form-input" placeholder="1">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Column</label>
+                  <select name="updateColumn" class="form-select">
+                    <option value="name">name</option>
+                    <option value="price">price</option>
+                    <option value="stock">stock</option>
+                    <option value="category">category</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">ค่าใหม่</label>
+                  <input type="text" name="updateValue" class="form-input" placeholder="ค่าใหม่">
+                </div>
+                <button type="submit" class="btn btn-primary">Execute</button>
+              </form>
+
+              <!-- DELETE -->
+              <form action="/lab03/execute" method="POST" class="query-form <%= queryType === 'DELETE' ? 'active' : '' %>" id="form-DELETE">
+                <input type="hidden" name="queryType" value="DELETE">
+                <div class="form-group">
+                  <label class="form-label">ID ที่ต้องการลบ</label>
+                  <input type="number" name="deleteId" class="form-input" placeholder="1">
+                </div>
+                <button type="submit" class="btn btn-danger">Execute</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div>
+          <% if (query) { %>
+            <div class="card mb-2">
+              <div class="card-header">SQL Query ที่รัน</div>
+              <div class="card-body">
+                <div class="sql-display"><%= query %></div>
+              </div>
+            </div>
+          <% } %>
+
+          <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+
+          <div class="card">
+            <div class="card-header">ผลลัพธ์ (<%= result ? result.length : 0 %> rows)</div>
+            <div class="card-body">
+              <% if (result && result.length > 0) { %>
+                <div class="table-container">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <% Object.keys(result[0]).forEach(key => { %>
+                          <th><%= key %></th>
+                        <% }) %>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% result.forEach(row => { %>
+                        <tr>
+                          <% Object.values(row).forEach(val => { %>
+                            <td><%= val %></td>
+                          <% }) %>
+                        </tr>
+                      <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <p class="text-muted text-center">ไม่พบข้อมูล</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Internal Tools</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function showForm(type) {
+      document.querySelectorAll('.query-form').forEach(f => f.classList.remove('active'));
+      document.querySelectorAll('.query-btn').forEach(b => {
+        b.classList.remove('active');
+        b.classList.add('btn-outline');
+      });
+
+      document.getElementById('form-' + type).classList.add('active');
+      event.target.classList.remove('btn-outline');
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>

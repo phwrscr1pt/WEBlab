@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .search-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      padding: 3rem 0;
+      text-align: center;
+      color: white;
+    }
+    .search-hero h1 { margin-bottom: 1.5rem; }
+    .search-hero .search-form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .search-hero .search-input {
+      border: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+    .product-item {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      transition: all 0.2s;
+    }
+    .product-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .product-item-name {
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+    .product-item-price {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab06?id=1" class="nav-link">หมวดหมู่</a>
+        <a href="/lab07" class="nav-link active">ค้นหา</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <section class="search-hero">
+    <div class="container">
+      <h1>ค้นหาสินค้า</h1>
+      <form action="/lab07" method="GET" class="search-form">
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" name="q" class="search-input" placeholder="พิมพ์ชื่อสินค้าที่ต้องการ..." value="<%= search %>">
+          <button type="submit" class="btn btn-secondary search-btn">ค้นหา</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <main class="main">
+    <div class="container page-content">
+      <% if (search) { %>
+        <!-- VULNERABLE: Using <%- %> renders raw HTML without escaping -->
+        <p class="mb-3">ผลการค้นหา: <strong><%- search %></strong></p>
+      <% } %>
+
+      <% if (products.length > 0) { %>
+        <div class="product-list">
+          <% products.forEach(product => { %>
+            <div class="product-item">
+              <div class="product-item-name"><%= product.name %></div>
+              <div class="product-item-price">฿<%= product.price ? product.price.toLocaleString() : '0' %></div>
+              <button class="btn btn-primary btn-sm mt-2">หยิบใส่ตะกร้า</button>
+            </div>
+          <% }) %>
+        </div>
+      <% } else if (search) { %>
+        <div class="card">
+          <div class="card-body text-center p-3">
+            <!-- VULNERABLE: Raw output -->
+            <p class="text-muted">ไม่พบสินค้าที่ค้นหา "<%- search %>"</p>
+            <p class="text-muted" style="font-size: 0.9rem;">ลองค้นหาด้วยคำอื่น</p>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="card">
+          <div class="card-header">สินค้าแนะนำ</div>
+          <div class="card-body">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+              <a href="/lab07?q=iPhone" class="btn btn-outline btn-sm">iPhone</a>
+              <a href="/lab07?q=Samsung" class="btn btn-outline btn-sm">Samsung</a>
+              <a href="/lab07?q=Laptop" class="btn btn-outline btn-sm">Laptop</a>
+              <a href="/lab07?q=หูฟัง" class="btn btn-outline btn-sm">หูฟัง</a>
+              <a href="/lab07?q=กระเป๋า" class="btn btn-outline btn-sm">กระเป๋า</a>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab08/search" class="nav-link active">ค้นหาสมาชิก</a>
+        <a href="/lab08/profile" class="nav-link">โปรไฟล์</a>
+        <a href="/lab08/logout" class="nav-link">ออกจากระบบ</a>
+      </nav>
+      <div class="header-slogan">สวัสดี, <%= user %></div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">ค้นหาสมาชิก</h1>
+      <p class="page-subtitle">ค้นหาเพื่อนสมาชิก ThaiMart</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="card mb-3">
+        <div class="card-body">
+          <form action="/lab08/search" method="GET">
+            <div class="search-form">
+              <input type="text" name="q" class="search-input" placeholder="ค้นหาชื่อสมาชิก..." value="<%= search %>">
+              <button type="submit" class="btn btn-primary search-btn">ค้นหา</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <% if (search) { %>
+        <!-- VULNERABLE: Raw HTML output -->
+        <div class="alert alert-info">
+          ผลการค้นหา: <strong><%- search %></strong>
+        </div>
+
+        <div class="card">
+          <div class="card-body text-center">
+            <!-- VULNERABLE: Also here -->
+            <p class="text-muted">ไม่พบสมาชิกที่ชื่อ "<%- search %>"</p>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="card">
+          <div class="card-header">สมาชิกที่ active ล่าสุด</div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ชื่อผู้ใช้</th>
+                  <th>ระดับ</th>
+                  <th>เข้าใช้ล่าสุด</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>somchai_shop</td>
+                  <td>Gold</td>
+                  <td>5 นาทีที่แล้ว</td>
+                </tr>
+                <tr>
+                  <td>nattaporn</td>
+                  <td>Silver</td>
+                  <td>15 นาทีที่แล้ว</td>
+                </tr>
+                <tr>
+                  <td>wichai99</td>
+                  <td>Bronze</td>
+                  <td>1 ชั่วโมงที่แล้ว</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

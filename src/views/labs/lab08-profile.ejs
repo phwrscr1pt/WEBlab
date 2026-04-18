@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab08/search" class="nav-link">ค้นหาสมาชิก</a>
+        <a href="/lab08/profile" class="nav-link active">โปรไฟล์</a>
+        <a href="/lab08/logout" class="nav-link">ออกจากระบบ</a>
+      </nav>
+      <div class="header-slogan">สวัสดี, <%= user %></div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">โปรไฟล์ของฉัน</h1>
+      <p class="page-subtitle">ข้อมูลบัญชีสมาชิก</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">ข้อมูลบัญชี</div>
+          <div class="card-body">
+            <table class="table">
+              <tr>
+                <td><strong>ชื่อผู้ใช้</strong></td>
+                <td><%= user %></td>
+              </tr>
+              <tr>
+                <td><strong>ระดับสมาชิก</strong></td>
+                <td><%= role %></td>
+              </tr>
+              <tr>
+                <td><strong>แต้มสะสม</strong></td>
+                <td>2,450 แต้ม</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Session Info</div>
+          <div class="card-body">
+            <p class="text-muted mb-2">Cookies ที่ถูกตั้งค่า:</p>
+            <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.8rem; word-break: break-all;">
+              <div><strong>thaimart_uid:</strong> <%= user %></div>
+              <div><strong>thaimart_role:</strong> <%= role %></div>
+              <div><strong>thaimart_session:</strong> <%= session %></div>
+            </div>
+            <p class="text-muted mt-2" style="font-size: 0.8rem;">
+              เปิด DevTools (F12) → Application → Cookies
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="/lab08/logout" class="btn btn-outline">ออกจากระบบ</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

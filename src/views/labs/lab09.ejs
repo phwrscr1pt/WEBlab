@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .product-hero {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+      padding: 2rem 0;
+      color: white;
+    }
+    .product-info {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .product-image-box {
+      width: 150px;
+      height: 150px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+    .product-details h1 { margin-bottom: 0.5rem; }
+    .product-price {
+      font-size: 1.75rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .rating { color: #fbbf24; font-size: 1.25rem; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab06?id=1" class="nav-link">หมวดหมู่</a>
+        <a href="/lab07" class="nav-link">ค้นหา</a>
+        <a href="/lab09" class="nav-link active">รีวิว</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <section class="product-hero">
+    <div class="container">
+      <div class="product-info">
+        <div class="product-image-box">📱</div>
+        <div class="product-details">
+          <h1>iPhone 15 Pro Max 256GB</h1>
+          <div class="rating">★★★★★ (4.8)</div>
+          <div class="product-price">฿48,900</div>
+          <p style="opacity: 0.8;">สินค้าขายดีอันดับ 1</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="main">
+    <div class="container page-content">
+      <% if (success) { %>
+        <div class="alert alert-success">รีวิวของคุณถูกบันทึกเรียบร้อยแล้ว!</div>
+      <% } %>
+
+      <div class="two-col">
+        <!-- Review Form -->
+        <div>
+          <div class="card">
+            <div class="card-header">เขียนรีวิว</div>
+            <div class="card-body">
+              <form action="/lab09/submit" method="POST">
+                <div class="form-group">
+                  <label class="form-label">ชื่อผู้รีวิว</label>
+                  <input type="text" name="reviewer_name" class="form-input" placeholder="ชื่อของคุณ" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">รีวิว</label>
+                  <textarea name="content" class="form-textarea" rows="4" placeholder="เขียนความคิดเห็นของคุณ..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">ส่งรีวิว</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews List -->
+        <div>
+          <div class="card">
+            <div class="card-header">รีวิวทั้งหมด (<%= reviews.length %>)</div>
+            <div class="card-body">
+              <% if (reviews.length > 0) { %>
+                <% reviews.forEach(review => { %>
+                  <div class="review-item">
+                    <div class="review-header">
+                      <!-- VULNERABLE: Using <%- %> renders raw HTML -->
+                      <span class="review-author"><%- review.reviewer_name %></span>
+                      <span class="review-date">
+                        <%= review.created_at ? new Date(review.created_at).toLocaleDateString('th-TH') : 'ไม่ระบุวันที่' %>
+                      </span>
+                    </div>
+                    <!-- VULNERABLE: Raw output allows stored XSS -->
+                    <div class="review-content"><%- review.content %></div>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <p class="text-muted text-center">ยังไม่มีรีวิว - เป็นคนแรกที่รีวิวสินค้านี้!</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

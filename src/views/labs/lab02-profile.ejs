@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab02" class="nav-link">สมาชิก</a>
+        <a href="/lab02/profile" class="nav-link active">โปรไฟล์</a>
+        <a href="/lab02/logout" class="nav-link">ออกจากระบบ</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">โปรไฟล์สมาชิก</h1>
+      <p class="page-subtitle">ยินดีต้อนรับ, <%= username %></p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="alert alert-success">
+        <strong>สถานะ:</strong> คุณเข้าสู่ระบบแล้ว
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">ข้อมูลบัญชี</div>
+          <div class="card-body">
+            <table class="table">
+              <tr>
+                <td><strong>ชื่อผู้ใช้</strong></td>
+                <td><%= username %></td>
+              </tr>
+              <tr>
+                <td><strong>ระดับสมาชิก</strong></td>
+                <td>🥇 Gold Member</td>
+              </tr>
+              <tr>
+                <td><strong>แต้มสะสม</strong></td>
+                <td>1,250 แต้ม</td>
+              </tr>
+              <tr>
+                <td><strong>วันที่สมัคร</strong></td>
+                <td>15 มกราคม 2569</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Session Information</div>
+          <div class="card-body">
+            <p class="text-muted mb-2">ข้อมูลเซสชันปัจจุบัน:</p>
+            <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; word-break: break-all;">
+              <strong>Session ID:</strong><br>
+              <%= sessionId %>
+            </div>
+            <p class="text-muted mt-2" style="font-size: 0.85rem;">
+              เปิด DevTools (F12) → Application → Cookies เพื่อดู Cookie ที่ถูกตั้งค่า
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-header">ประวัติคำสั่งซื้อ</div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>เลขที่คำสั่งซื้อ</th>
+                <th>วันที่</th>
+                <th>จำนวนเงิน</th>
+                <th>สถานะ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>TM-2569001234</td>
+                <td>10 เม.ย. 2569</td>
+                <td>฿1,290</td>
+                <td><span style="color: var(--success);">จัดส่งแล้ว</span></td>
+              </tr>
+              <tr>
+                <td>TM-2569001198</td>
+                <td>5 เม.ย. 2569</td>
+                <td>฿890</td>
+                <td><span style="color: var(--success);">จัดส่งแล้ว</span></td>
+              </tr>
+              <tr>
+                <td>TM-2569001156</td>
+                <td>28 มี.ค. 2569</td>
+                <td>฿2,450</td>
+                <td><span style="color: var(--success);">จัดส่งแล้ว</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="/lab02/logout" class="btn btn-outline">ออกจากระบบ</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

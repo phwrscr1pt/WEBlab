@@ -10,6 +10,23 @@
 
 **Status:** ✅ Deployed and Running
 
+## Labs Summary
+
+| Lab | Topic | Type | Flag/Credential |
+|-----|-------|------|-----------------|
+| 01 | HTTP Methods | Teaching | - |
+| 02 | Cookie/Session | Teaching | user1 / password123 |
+| 03 | SQL Basics | Teaching | - |
+| 04 | SQL Injection | Vulnerable | seller1 / securepass99 |
+| 05 | Union SQLi | Vulnerable | superadmin in DB |
+| 06 | SQLmap | Vulnerable | secret_orders table |
+| 07 | Reflected XSS | Vulnerable | - |
+| 08 | Cookie Stealing | Vulnerable | member1 / 1234 |
+| 09 | Stored XSS | Vulnerable | - |
+| 10 | Burp Intercept | CTF | `SMC{1nt3rc3pt_m4st3r}` |
+| 11 | Burp Repeater | CTF | `SMC{r3p34t3r_h34d3r_f0und}` |
+| 12 | Burp Intruder | CTF | `SMC{brut3_f0rc3_w1ns}` |
+
 ## Tech Stack
 
 | Component | Technology |
@@ -141,13 +158,16 @@ ThaiMart-Labs/
 ├── .gitignore
 ├── .env.example
 │
+├── docs/
+│   └── DEMO_SCRIPT.md      # Instructor demo script (Web Essentials)
+│
 ├── src/
 │   ├── app.js              # Express entry point
 │   │
 │   ├── routes/
 │   │   ├── index.js        # Hub page
-│   │   ├── lab01.js        # HTTP Methods
-│   │   ├── lab02.js        # Stateless Demo
+│   │   ├── lab01.js        # HTTP Methods + Live Sync
+│   │   ├── lab02.js        # Stateless Demo + Themes
 │   │   ├── lab03.js        # SQL Playground
 │   │   ├── lab04.js        # Auth Bypass (SQLi)
 │   │   ├── lab05.js        # Union SQLi
@@ -155,6 +175,9 @@ ThaiMart-Labs/
 │   │   ├── lab07.js        # Reflected XSS
 │   │   ├── lab08.js        # Cookie Stealing
 │   │   ├── lab09.js        # Stored XSS
+│   │   ├── lab10.js        # Burp Intercept
+│   │   ├── lab11.js        # Burp Repeater
+│   │   ├── lab12.js        # Burp Intruder
 │   │   └── logger.js       # Cookie catcher
 │   │
 │   ├── views/
@@ -163,8 +186,10 @@ ThaiMart-Labs/
 │   │   ├── 404.ejs
 │   │   ├── error.ejs
 │   │   └── labs/
-│   │       ├── lab01.ejs
-│   │       ├── lab02-*.ejs
+│   │       ├── lab01.ejs           # Shopping Cart + Network Inspector
+│   │       ├── lab02-home.ejs      # Member home
+│   │       ├── lab02-login.ejs     # Login form
+│   │       ├── lab02-profile.ejs   # Profile + Cookie exercises
 │   │       ├── lab03.ejs
 │   │       ├── lab04-*.ejs
 │   │       ├── lab05.ejs
@@ -173,6 +198,9 @@ ThaiMart-Labs/
 │   │       ├── lab07.ejs
 │   │       ├── lab08-*.ejs
 │   │       ├── lab09.ejs
+│   │       ├── lab10.ejs           # Flash Sale (Intercept)
+│   │       ├── lab11.ejs           # Internal API (Repeater)
+│   │       ├── lab12.ejs           # Gift Card (Intruder)
 │   │       └── logger.ejs
 │   │
 │   └── public/
@@ -438,4 +466,8 @@ ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo do
 
 ---
 
-*Last Updated: 2026-04-19 (Added Lab 02 theme switcher, Labs 10-12 Burp Suite practice)*
+*Last Updated: 2026-04-19*
+- Lab 01: Live Sync (curl → browser updates automatically)
+- Lab 02: Theme switcher + cookie exercises
+- Labs 10-12: Burp Suite CTF challenges with flags
+- docs/DEMO_SCRIPT.md: Instructor demo for Web Essentials

@@ -17,7 +17,19 @@
 
 ### SSH เข้า Lab VM
 ```bash
+# ถ้าตั้งค่า SSH config แล้ว (แนะนำ)
+ssh thaimart-lab
+
+# หรือใช้ full command
 ssh -J root-agent@100.107.182.15 asdf@10.10.61.87
+```
+
+### ตรวจสอบว่าระบบพร้อมใช้งาน
+```bash
+# ตรวจสอบ containers
+ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose ps"
+
+# ควรเห็น 2 containers: web (Up) และ db (Up healthy)
 ```
 
 ---
@@ -35,10 +47,13 @@ sudo docker-compose ps
 
 ### Output ที่คาดหวัง:
 ```
-NAME                IMAGE                 STATUS          PORTS
-thaimart-web        thaimart-labs-web     Up 2 hours      0.0.0.0:80->3000/tcp
-thaimart-db         postgres:16-alpine    Up 2 hours      5432/tcp
+       Name                      Command                  State                      Ports
+----------------------------------------------------------------------------------------------------------
+thaimart-labs_db_1    docker-entrypoint.sh postgres    Up (healthy)   5432/tcp
+thaimart-labs_web_1   docker-entrypoint.sh node  ...   Up             0.0.0.0:80->3000/tcp,:::80->3000/tcp
 ```
+
+> **หมายเหตุ:** ชื่อ container อาจแตกต่างกันตาม docker-compose version
 
 ### อธิบาย:
 > "เห็นไหมครับ เรามี 2 containers:
@@ -99,8 +114,10 @@ head -50 src/routes/lab01.js
 ### รันคำสั่ง:
 ```bash
 # เข้าไปใน Database container
-sudo docker exec -it thaimart-db psql -U thaimart -d thaimart
+sudo docker exec -it thaimart-labs_db_1 psql -U thaimart -d thaimart
 ```
+
+> **หมายเหตุ:** ชื่อ container อาจเป็น `thaimart-db` หรือ `thaimart-labs_db_1` ขึ้นกับ docker-compose version ใช้ `docker-compose ps` เพื่อดูชื่อจริง
 
 ### ใน PostgreSQL:
 ```sql
@@ -150,15 +167,33 @@ curl -X POST http://10.10.61.87/lab01/cart \
      -d '{"product_id": 1, "quantity": 1}'
 ```
 
+### Output ที่จะเห็นใน Logs:
+```
+web_1  | POST /lab01/cart 201 33.496 ms - 329
+web_1  | GET /lab01/cart 200 5.123 ms - 245
+web_1  | GET /lab01 200 12.456 ms - 8234
+```
+
+> **รูปแบบ:** `METHOD /path STATUS_CODE response_time - content_length`
+
 ### อธิบาย:
 > "เห็นไหมครับ! ทุกครั้งที่มี request เข้ามา server จะ log ออกมา
 >
-> - IP address ของผู้ส่ง request
-> - HTTP method (GET, POST, PUT, DELETE)
-> - Path ที่เรียก
-> - Status code ที่ส่งกลับ
+> - **POST /lab01/cart** - HTTP method และ path
+> - **201** - Status code (201 = Created สำเร็จ)
+> - **33.496 ms** - เวลาที่ server ใช้ประมวลผล
+> - **329** - ขนาด response (bytes)
 >
-> นี่คือสิ่งที่ admin เห็นเวลามีคนเข้าใช้เว็บไซต์"
+> นี่คือสิ่งที่ admin เห็นเวลามีคนเข้าใช้เว็บไซต์ รวมถึงเวลามีคนพยายามโจมตีด้วย!"
+
+### ตัวอย่างการโจมตีที่จะเห็นใน Logs:
+```bash
+# SQL Injection attempt
+web_1  | GET /lab05?search=' OR '1'='1 200 15.234 ms - 4521
+
+# XSS attempt
+web_1  | GET /lab07?q=<script>alert(1)</script> 200 8.123 ms - 2345
+```
 
 ### หยุด logs:
 กด `Ctrl+C`
@@ -217,26 +252,33 @@ curl -X POST http://10.10.61.87/lab01/cart \
 
 ```bash
 # SSH เข้า Lab VM
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87
+ssh thaimart-lab
+# หรือ: ssh -J root-agent@100.107.182.15 asdf@10.10.61.87
 
 # ดู containers ที่รันอยู่
 sudo docker-compose ps
 
-# ดู logs แบบ real-time
+# ดู logs แบบ real-time (จะเห็นทุก HTTP request)
 sudo docker-compose logs -f web
 
+# ดู logs ย้อนหลัง 100 บรรทัด
+sudo docker-compose logs --tail=100 web
+
 # เข้า database
-sudo docker exec -it thaimart-db psql -U thaimart -d thaimart
+sudo docker exec -it thaimart-labs_db_1 psql -U thaimart -d thaimart
 
 # Restart ทั้งระบบ
 sudo docker-compose restart
 
-# Reset database (ล้างข้อมูลทั้งหมด)
+# Reset database (ล้างข้อมูลทั้งหมด รวมถึง stored XSS)
 sudo docker-compose down -v && sudo docker-compose up -d
 
 # ดู source code
 cat src/app.js
 cat src/routes/lab01.js
+
+# Pull latest code และ deploy
+git pull && sudo docker-compose up -d --build
 ```
 
 ---
@@ -258,6 +300,64 @@ sudo docker-compose restart db
 sudo docker-compose logs --tail=50 web
 ```
 
+### ถ้า web container crash:
+```bash
+# ดู error
+sudo docker-compose logs --tail=100 web
+
+# Rebuild และ restart
+sudo docker-compose up -d --build
+```
+
+### ถ้านักเรียนเข้าเว็บไม่ได้:
+1. ตรวจสอบว่า containers รันอยู่: `sudo docker-compose ps`
+2. ตรวจสอบ network ของนักเรียน (ต้องอยู่ใน LAN 10.10.61.x)
+3. ลอง curl จาก Lab VM: `curl http://localhost/lab01`
+
+### ถ้า Stored XSS (Lab 09) มี script เยอะเกินไป:
+```bash
+# Reset database จะล้าง reviews ทั้งหมด
+sudo docker-compose down -v && sudo docker-compose up -d
+```
+
+### ถ้าต้องการดู container ที่รันอยู่:
+```bash
+# ดูชื่อ container จริง
+sudo docker ps --format "table {{.Names}}\t{{.Status}}"
+```
+
+---
+
+## Instructor Tips
+
+### ก่อนเริ่มสอน
+1. **ทดสอบ SSH ก่อน** - ตรวจสอบว่า `ssh thaimart-lab` ทำงานได้
+2. **Reset database** - ล้างข้อมูลเก่าจาก session ก่อนหน้า
+3. **เปิด 2 terminals** - อันนึงสำหรับ logs, อีกอันสำหรับ demo commands
+
+### ระหว่างสอน
+1. **เปิด logs ไว้ตลอด** - นักเรียนจะเห็นว่า request ของตัวเองไปถึง server
+2. **ใช้ curl สาธิตก่อน** - แล้วค่อยให้นักเรียนลองเอง
+3. **อธิบาย status codes** - 200 OK, 201 Created, 400 Bad Request, 500 Error
+
+### Lab Credentials (เก็บไว้อ้างอิง)
+| Lab | Username | Password |
+|-----|----------|----------|
+| 02 | user1 | password123 |
+| 04 | seller1 | securepass99 |
+| 08 | member1 | 1234 |
+
+### CTF Flags (เก็บไว้ตรวจคำตอบ)
+| Lab | Flag |
+|-----|------|
+| 10 | `SMC{1nt3rc3pt_m4st3r}` |
+| 11 | `SMC{r3p34t3r_h34d3r_f0und}` |
+| 12 | `SMC{brut3_f0rc3_w1ns}` |
+
+### Lab 12 - Correct PIN
+- **PIN:** `7392`
+
 ---
 
 *สร้างเมื่อ: 2026-04-19*
+*อัปเดตล่าสุด: 2026-04-19 - เพิ่ม morgan logging, SSH alias, instructor tips*

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .gift-card-section {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .gift-card {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      border-radius: 16px;
+      padding: 2rem;
+      color: white;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+    }
+    .gift-card-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    .gift-card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .gift-card-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    .gift-card-value span {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    /* PIN Input */
+    .pin-form {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: -1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .pin-label {
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .pin-input-group {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .pin-digit {
+      width: 50px;
+      height: 60px;
+      font-size: 1.5rem;
+      text-align: center;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-weight: 700;
+    }
+    .pin-digit:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    .btn-redeem {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn-redeem:hover {
+      background: var(--primary-dark);
+    }
+
+    /* Attempt Counter */
+    .attempt-counter {
+      text-align: center;
+      margin-top: 1rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Result */
+    .result-section {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .result-success {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      color: white;
+    }
+    .result-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+    }
+    .flag-display {
+      background: #0d0d0d;
+      color: #22c55e;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 1.25rem;
+      margin-top: 1rem;
+      letter-spacing: 2px;
+    }
+
+    /* Instructions */
+    .instructions {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .instructions h3 {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .instructions ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+    .instructions li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    .instructions code {
+      background: rgba(0,0,0,0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .intruder-config {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .intruder-config .label { color: #60a5fa; }
+    .intruder-config .value { color: #86efac; }
+    .hint-box {
+      background: rgba(251, 191, 36, 0.2);
+      border-left: 4px solid #fbbf24;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    .hint-box strong { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab12" class="nav-link active">Gift Card</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">แลก Gift Card</h1>
+      <p class="page-subtitle">กรอก PIN 4 หลักเพื่อรับเครดิต</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <div class="gift-card-section">
+        <!-- Gift Card Display -->
+        <div class="gift-card">
+          <div class="gift-card-icon">🎁</div>
+          <div class="gift-card-title">ThaiMart Gift Card</div>
+          <div class="gift-card-value">
+            ฿10,000 <span>THB</span>
+          </div>
+        </div>
+
+        <!-- PIN Entry Form -->
+        <div class="pin-form">
+          <label class="pin-label">กรอก PIN 4 หลัก</label>
+          <form action="/lab12/redeem" method="POST" id="pinForm">
+            <input type="hidden" name="pin" id="pinHidden">
+            <div class="pin-input-group">
+              <input type="text" maxlength="1" class="pin-digit" data-index="0" inputmode="numeric" pattern="[0-9]">
+              <input type="text" maxlength="1" class="pin-digit" data-index="1" inputmode="numeric" pattern="[0-9]">
+              <input type="text" maxlength="1" class="pin-digit" data-index="2" inputmode="numeric" pattern="[0-9]">
+              <input type="text" maxlength="1" class="pin-digit" data-index="3" inputmode="numeric" pattern="[0-9]">
+            </div>
+            <button type="submit" class="btn-redeem">แลกรับเครดิต</button>
+          </form>
+          <div class="attempt-counter">
+            จำนวนครั้งที่ลอง: <strong><%= attempts %></strong>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <% if (result) { %>
+          <div class="result-section <%= result.success ? 'result-success' : 'result-error' %>">
+            <% if (result.success) { %>
+              <h3>🎉 <%= result.message %></h3>
+              <p>คุณได้รับเครดิต ฿10,000 ในบัญชี ThaiMart ของคุณ</p>
+              <div class="flag-display"><%= result.flag %></div>
+            <% } else { %>
+              <strong><%= result.message %></strong>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Instructions -->
+      <div class="instructions">
+        <h3>🎯 Lab 12: Burp Suite - Intruder</h3>
+        <p style="margin-bottom: 1rem;">เรียนรู้การใช้ Burp Suite Intruder เพื่อ brute force รหัส PIN 4 หลัก</p>
+
+        <ol>
+          <li>
+            กรอก PIN อะไรก็ได้ (เช่น 0000) แล้วกด Submit เพื่อจับ request
+          </li>
+          <li>
+            ใน Burp Suite: คลิกขวาที่ request → <strong>Send to Intruder</strong> (Ctrl+I)
+          </li>
+          <li>
+            ไปที่ <strong>Intruder</strong> tab → <strong>Positions</strong> subtab
+          </li>
+          <li>
+            กด <strong>Clear §</strong> แล้วเลือกเฉพาะค่า PIN ในส่วน <code>pin=XXXX</code>
+            <br>แล้วกด <strong>Add §</strong> เพื่อ mark ตำแหน่งที่จะ brute force
+          </li>
+          <li>
+            ไปที่ <strong>Payloads</strong> subtab:
+            <div class="intruder-config">
+              <span class="label">Payload type:</span> <span class="value">Numbers</span><br>
+              <span class="label">From:</span> <span class="value">0</span><br>
+              <span class="label">To:</span> <span class="value">9999</span><br>
+              <span class="label">Step:</span> <span class="value">1</span><br>
+              <span class="label">Min/Max integer digits:</span> <span class="value">4</span>
+            </div>
+          </li>
+          <li>
+            กด <strong>Start attack</strong> และรอดู response
+          </li>
+          <li>
+            มองหา response ที่มี <strong>Length</strong> หรือ <strong>Status</strong> แตกต่างจากอื่น
+          </li>
+        </ol>
+
+        <div class="hint-box">
+          <strong>Hint:</strong> PIN ที่ถูกต้องจะให้ response status <code>200</code> และมี field <code>"success": true</code>
+          <br>ส่วน PIN ที่ผิดจะได้ status <code>401</code>
+        </div>
+
+        <div class="intruder-config" style="margin-top: 1rem;">
+          <div style="color: #9ca3af; margin-bottom: 0.5rem;"># ทดสอบด้วย curl:</div>
+          <span style="color: #22c55e;">$</span> curl -X POST http://10.10.61.87/lab12/verify \<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;-d '{"pin": "0000"}'
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Auto-focus and auto-move for PIN digits
+    const digits = document.querySelectorAll('.pin-digit');
+
+    digits.forEach((digit, index) => {
+      digit.addEventListener('input', (e) => {
+        // Only allow numbers
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+
+        if (e.target.value && index < digits.length - 1) {
+          digits[index + 1].focus();
+        }
+      });
+
+      digit.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          digits[index - 1].focus();
+        }
+      });
+    });
+
+    // Combine digits before submit
+    document.getElementById('pinForm').addEventListener('submit', (e) => {
+      let pin = '';
+      digits.forEach(d => pin += d.value);
+      document.getElementById('pinHidden').value = pin;
+
+      if (pin.length !== 4) {
+        e.preventDefault();
+        alert('กรุณากรอก PIN 4 หลัก');
+      }
+    });
+
+    // Auto-focus first digit
+    digits[0].focus();
+  </script>
+</body>
+</html>

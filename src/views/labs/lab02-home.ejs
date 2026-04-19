@@ -8,8 +8,63 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Theme Variables */
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b7280;
+      --header-bg: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+      --header-text: #ffffff;
+      --card-bg: #ffffff;
+      --card-border: #e5e7eb;
+    }
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --header-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --header-text: #f1f5f9;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+    }
+    [data-theme="orange"] {
+      --bg-primary: #fff7ed;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b7280;
+      --header-bg: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      --header-text: #ffffff;
+      --card-bg: #ffffff;
+      --card-border: #fed7aa;
+    }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    .header { background: var(--header-bg); }
+    .header, .header a, .header .logo-text, .header-slogan { color: var(--header-text); }
+    .card { background: var(--card-bg); border-color: var(--card-border); }
+    .card-header { background: var(--card-border); color: var(--text-primary); }
+    .text-muted { color: var(--text-secondary) !important; }
+    /* Theme Switcher */
+    .theme-switcher { display: flex; gap: 0.5rem; align-items: center; margin-left: 1rem; }
+    .theme-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3); cursor: pointer;
+      transition: all 0.2s; display: flex; align-items: center;
+      justify-content: center; font-size: 0.75rem;
+    }
+    .theme-btn:hover { transform: scale(1.1); border-color: rgba(255,255,255,0.8); }
+    .theme-btn.active { border-color: #ffffff; box-shadow: 0 0 0 2px rgba(255,255,255,0.3); }
+    .theme-btn-light { background: #f8fafc; }
+    .theme-btn-dark { background: #1e293b; }
+    .theme-btn-orange { background: #f97316; }
+  </style>
 </head>
-<body>
+<body data-theme="<%= theme %>">
   <header class="header">
     <div class="container header-content">
       <a href="/" class="logo">
@@ -26,7 +81,20 @@
           <a href="/lab02/login" class="nav-link">เข้าสู่ระบบ</a>
         <% } %>
       </nav>
-      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+      <div class="theme-switcher">
+        <form action="/lab02/theme" method="POST" style="display:contents;">
+          <input type="hidden" name="theme" value="light">
+          <button type="submit" class="theme-btn theme-btn-light <%= theme === 'light' ? 'active' : '' %>" title="Light">☀️</button>
+        </form>
+        <form action="/lab02/theme" method="POST" style="display:contents;">
+          <input type="hidden" name="theme" value="dark">
+          <button type="submit" class="theme-btn theme-btn-dark <%= theme === 'dark' ? 'active' : '' %>" title="Dark">🌙</button>
+        </form>
+        <form action="/lab02/theme" method="POST" style="display:contents;">
+          <input type="hidden" name="theme" value="orange">
+          <button type="submit" class="theme-btn theme-btn-orange <%= theme === 'orange' ? 'active' : '' %>" title="Orange">🧡</button>
+        </form>
+      </div>
     </div>
   </header>
 

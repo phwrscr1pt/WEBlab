@@ -97,6 +97,9 @@ ssh thaimart-lab
 | Lab 07 - Product Search (XSS) | http://10.10.61.87/lab07 |
 | Lab 08 - Member Search (XSS) | http://10.10.61.87/lab08 |
 | Lab 09 - Reviews (Stored XSS) | http://10.10.61.87/lab09 |
+| Lab 10 - Flash Sale (Burp Intercept) | http://10.10.61.87/lab10 |
+| Lab 11 - Internal API (Burp Repeater) | http://10.10.61.87/lab11 |
+| Lab 12 - Gift Card (Burp Intruder) | http://10.10.61.87/lab12 |
 
 ### Quick Deploy
 
@@ -201,7 +204,12 @@ ThaiMart-Labs/
   - Request body (JSON)
   - Equivalent curl command (with Copy button)
   - JSON response from server
-- **Learning:** "สิ่งที่ฉันกดบนเว็บ = curl command นี้"
+- **Live Sync Feature:**
+  - Cart auto-refreshes every 2 seconds via polling
+  - When students run curl commands in terminal, the browser updates automatically
+  - Green "Live Sync" indicator shows polling status
+  - Polling pauses when browser tab is hidden (saves resources)
+- **Learning:** "สิ่งที่ฉันกดบนเว็บ = curl command นี้" / "curl ใน terminal → เห็นผลบนเว็บทันที"
 - **API Endpoints:**
   | Method | Path | Action |
   |--------|------|--------|
@@ -229,12 +237,25 @@ ThaiMart-Labs/
   curl -X DELETE http://10.10.61.87/lab01/cart/1
   ```
 
-### Lab 02: Stateless Demo
+### Lab 02: Stateless Demo (Cookie & Session)
 - **Path:** `/lab02`
 - **Story:** ThaiMart Member Login
 - **Credentials:** user1 / password123
-- **Concept:** Cookies, session, stateless HTTP
+- **Concept:** Cookies, session, stateless HTTP, theme persistence
 - **Vulnerable:** No
+- **Features:**
+  - Theme switcher (light/dark/orange) stored in `thaimart_theme` cookie
+  - Session stored in `thaimart_session` cookie
+  - Interactive exercises on profile page
+- **Cookie Exercises:**
+  1. Delete `thaimart_session` → Reload → Must login again
+  2. Edit `thaimart_theme` value in DevTools → Reload → Page changes theme
+- **Cookies used:**
+  | Cookie | Purpose |
+  |--------|---------|
+  | `thaimart_session` | Session ID |
+  | `thaimart_user` | Username |
+  | `thaimart_theme` | Theme preference (light/dark/orange) |
 
 ### Lab 03: SQL Playground (Type SQL Yourself)
 - **Path:** `/lab03`
@@ -314,6 +335,54 @@ ThaiMart-Labs/
 - **Vulnerable:** YES - Stored XSS
 - **Attack:** Submit review with `<script>alert('XSS')</script>`
 
+### Lab 10: Burp Suite - Intercept
+- **Path:** `/lab10`
+- **Story:** Flash Sale Shopping
+- **Concept:** HTTP Request Interception
+- **Vulnerable:** Hidden form field manipulation
+- **Flag:** `SMC{1nt3rc3pt_m4st3r}`
+- **How it works:**
+  - Order form has hidden `discount_code` field (empty)
+  - Student intercepts POST request with Burp
+  - Changes `discount_code` to `THAIM4RT_VIP_2026`
+  - Server returns flag if code matches
+- **Hint endpoint:** `GET /lab10/api/promotions` reveals the code
+
+### Lab 11: Burp Suite - Repeater
+- **Path:** `/lab11`
+- **Story:** Internal API Access
+- **Concept:** Reading responses, adding headers
+- **Vulnerable:** No (teaching tool)
+- **Flag:** `SMC{r3p34t3r_h34d3r_f0und}`
+- **How it works:**
+  1. `GET /lab11/api/status` returns `access_token` in JSON
+  2. Student sends to Repeater, changes path to `/lab11/api/secret`
+  3. Adds header `X-Access-Token: [token from step 1]`
+  4. Server returns flag if token matches
+- **Endpoints:**
+  | Method | Path | Description |
+  |--------|------|-------------|
+  | GET | `/lab11/api/status` | Returns token in response |
+  | GET | `/lab11/api/secret` | Requires X-Access-Token header |
+
+### Lab 12: Burp Suite - Intruder
+- **Path:** `/lab12`
+- **Story:** Gift Card PIN Redemption
+- **Concept:** Brute force attacks
+- **Vulnerable:** No rate limiting
+- **Flag:** `SMC{brut3_f0rc3_w1ns}`
+- **Correct PIN:** `7392`
+- **How it works:**
+  - Student enters any PIN, captures request
+  - Sends to Intruder, marks PIN position
+  - Uses Numbers payload (0000-9999, 4 digits)
+  - Correct PIN returns HTTP 200 with flag
+- **Endpoints:**
+  | Method | Path | Description |
+  |--------|------|-------------|
+  | POST | `/lab12/verify` | JSON API: `{"pin": "XXXX"}` |
+  | POST | `/lab12/redeem` | Form submission (HTML response) |
+
 ### Logger (Cookie Catcher)
 - **Path:** `/logger`
 - **Endpoint:** `GET /logger/catch?c=COOKIE`
@@ -369,4 +438,4 @@ ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo do
 
 ---
 
-*Last Updated: 2026-04-19 (Lab 01 redesigned as Shopping Cart with Network Inspector)*
+*Last Updated: 2026-04-19 (Added Lab 02 theme switcher, Labs 10-12 Burp Suite practice)*

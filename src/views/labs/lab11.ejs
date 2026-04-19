@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .api-panel {
+      background: #1e1e1e;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 1.5rem;
+    }
+    .api-header {
+      background: #2d2d2d;
+      color: #e5e7eb;
+      padding: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .api-body {
+      padding: 1.5rem;
+    }
+    .endpoint-card {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .endpoint-card:last-child {
+      margin-bottom: 0;
+    }
+    .endpoint-method {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+      background: #22c55e20;
+      color: #22c55e;
+    }
+    .endpoint-path {
+      color: #fbbf24;
+      font-family: 'Fira Code', monospace;
+    }
+    .endpoint-desc {
+      color: #9ca3af;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    .try-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+    }
+    .try-btn:hover {
+      background: #2563eb;
+    }
+
+    /* Response Display */
+    .response-panel {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    .response-panel.show {
+      display: block;
+    }
+    .response-status {
+      font-family: 'Fira Code', monospace;
+      margin-bottom: 0.5rem;
+    }
+    .status-200 { color: #22c55e; }
+    .status-401, .status-403 { color: #ef4444; }
+    .response-body {
+      color: #86efac;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* Instructions */
+    .instructions {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .instructions h3 {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .instructions ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+    .instructions li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    .instructions code {
+      background: rgba(0,0,0,0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .step-highlight {
+      background: rgba(251, 191, 36, 0.2);
+      border-left: 4px solid #fbbf24;
+      padding: 0.75rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .step-highlight strong { color: #fbbf24; }
+
+    /* Curl Commands */
+    .curl-section {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      position: relative;
+    }
+    .curl-label {
+      color: #9ca3af;
+      font-size: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .curl-prompt { color: #22c55e; }
+    .curl-flag { color: #60a5fa; }
+    .curl-url { color: #fbbf24; }
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: #374151;
+      border: none;
+      color: #9ca3af;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+    .copy-btn:hover {
+      background: #4b5563;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab11" class="nav-link active">Internal API</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">ThaiMart Internal API</h1>
+      <p class="page-subtitle">API Documentation - Authorized Personnel Only</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <!-- API Endpoints Panel -->
+      <div class="api-panel">
+        <div class="api-header">
+          <span>📡</span> Available Endpoints
+        </div>
+        <div class="api-body">
+          <!-- Endpoint 1: Status -->
+          <div class="endpoint-card">
+            <span class="endpoint-method">GET</span>
+            <span class="endpoint-path">/lab11/api/status</span>
+            <div class="endpoint-desc">ตรวจสอบสถานะ API และดูข้อมูล authentication</div>
+            <button class="try-btn" onclick="tryEndpoint('/lab11/api/status', 'response1')">Try it</button>
+            <div class="response-panel" id="response1"></div>
+          </div>
+
+          <!-- Endpoint 2: Secret -->
+          <div class="endpoint-card">
+            <span class="endpoint-method">GET</span>
+            <span class="endpoint-path">/lab11/api/secret</span>
+            <div class="endpoint-desc">เข้าถึงข้อมูลลับ (ต้องมี X-Access-Token header)</div>
+            <button class="try-btn" onclick="tryEndpoint('/lab11/api/secret', 'response2')">Try it (without token)</button>
+            <div class="response-panel" id="response2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="instructions">
+        <h3>🎯 Lab 11: Burp Suite - Repeater</h3>
+        <p style="margin-bottom: 1rem;">เรียนรู้การใช้ Burp Suite Repeater เพื่ออ่าน response และแก้ไข request</p>
+
+        <ol>
+          <li>
+            <strong>Step 1:</strong> เปิด Burp Suite และส่ง request ไปที่ <code>GET /lab11/api/status</code>
+            <div class="step-highlight">
+              <strong>Tip:</strong> คลิกปุ่ม "Try it" แล้ว intercept ด้วย Burp หรือใช้ curl
+            </div>
+          </li>
+          <li>
+            <strong>Step 2:</strong> อ่าน JSON response - มองหา <code>access_token</code> ในข้อมูลที่ได้รับ
+          </li>
+          <li>
+            <strong>Step 3:</strong> คลิกขวาที่ request → <strong>Send to Repeater</strong> (หรือกด Ctrl+R)
+          </li>
+          <li>
+            <strong>Step 4:</strong> ใน Repeater tab แก้ไข:
+            <ul style="margin-top: 0.5rem; margin-left: 1rem;">
+              <li>เปลี่ยน path เป็น <code>/lab11/api/secret</code></li>
+              <li>เพิ่ม header: <code>X-Access-Token: [token ที่ได้จาก step 2]</code></li>
+            </ul>
+          </li>
+          <li>
+            <strong>Step 5:</strong> กด <strong>Send</strong> และดู response - Flag จะปรากฏถ้าทำถูกต้อง!
+          </li>
+        </ol>
+
+        <div class="curl-section">
+          <button class="copy-btn" onclick="copyCurl()">Copy</button>
+          <div class="curl-label"># Step 1: Get token</div>
+          <span class="curl-prompt">$</span> curl <span class="curl-url">"http://10.10.61.87/lab11/api/status"</span>
+          <br><br>
+          <div class="curl-label"># Step 2: Use token (replace YOUR_TOKEN)</div>
+          <span class="curl-prompt">$</span> curl <span class="curl-flag">-H</span> "X-Access-Token: YOUR_TOKEN" <span class="curl-url">"http://10.10.61.87/lab11/api/secret"</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    async function tryEndpoint(url, responseId) {
+      const responsePanel = document.getElementById(responseId);
+      responsePanel.classList.add('show');
+      responsePanel.innerHTML = '<span style="color: #9ca3af;">Loading...</span>';
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const statusClass = response.status === 200 ? 'status-200' : 'status-401';
+
+        responsePanel.innerHTML = `
+          <div class="response-status ${statusClass}">HTTP ${response.status}</div>
+          <div class="response-body">${JSON.stringify(data, null, 2)}</div>
+        `;
+      } catch (error) {
+        responsePanel.innerHTML = `<span style="color: #ef4444;">Error: ${error.message}</span>`;
+      }
+    }
+
+    function copyCurl() {
+      const text = `# Step 1: Get token
+curl "http://10.10.61.87/lab11/api/status"
+
+# Step 2: Use token (replace YOUR_TOKEN)
+curl -H "X-Access-Token: YOUR_TOKEN" "http://10.10.61.87/lab11/api/secret"`;
+      navigator.clipboard.writeText(text);
+      document.querySelector('.copy-btn').textContent = 'Copied!';
+      setTimeout(() => document.querySelector('.copy-btn').textContent = 'Copy', 2000);
+    }
+  </script>
+</body>
+</html>

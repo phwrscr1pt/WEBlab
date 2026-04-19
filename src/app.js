@@ -49,6 +49,9 @@ app.use('/lab06', require('./routes/lab06'));
 app.use('/lab07', require('./routes/lab07'));
 app.use('/lab08', require('./routes/lab08'));
 app.use('/lab09', require('./routes/lab09'));
+app.use('/lab10', require('./routes/lab10'));
+app.use('/lab11', require('./routes/lab11'));
+app.use('/lab12', require('./routes/lab12'));
 app.use('/logger', require('./routes/logger'));
 
 // 404 handler

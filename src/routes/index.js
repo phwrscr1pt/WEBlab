@@ -75,6 +75,30 @@ router.get('/', (req, res) => {
       topic: 'XSS',
       topicColor: 'red',
       path: '/lab09'
+    },
+    {
+      number: '10',
+      title: 'Flash Sale',
+      description: 'สินค้าลดราคาพิเศษ (Burp Intercept)',
+      topic: 'Burp Suite',
+      topicColor: 'orange',
+      path: '/lab10'
+    },
+    {
+      number: '11',
+      title: 'Internal API',
+      description: 'เข้าถึง API ลับ (Burp Repeater)',
+      topic: 'Burp Suite',
+      topicColor: 'orange',
+      path: '/lab11'
+    },
+    {
+      number: '12',
+      title: 'Gift Card',
+      description: 'แลก Gift Card (Burp Intruder)',
+      topic: 'Burp Suite',
+      topicColor: 'orange',
+      path: '/lab12'
     }
   ];
 

@@ -188,6 +188,37 @@
       background: #4b5563;
     }
 
+    /* Live Sync Indicator */
+    .live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: #22c55e;
+      background: #22c55e15;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    .live-indicator.paused {
+      color: #6b7280;
+      background: #6b728015;
+    }
+    .live-indicator.paused .live-dot {
+      background: #6b7280;
+      animation: none;
+    }
+
     /* Network Inspector Panel */
     .inspector-panel {
       background: #1e1e1e;
@@ -395,7 +426,13 @@
           <div class="cart-section">
             <div class="cart-header">
               <span>🛒 ตะกร้าสินค้า (<span id="cartCount"><%= cart.length %></span> รายการ)</span>
-              <button class="btn-clear-cart" onclick="clearCart()">ล้างตะกร้า</button>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="live-indicator" id="liveIndicator" title="Auto-sync ทุก 2 วินาที - ลอง curl แล้วดูผลที่นี่">
+                  <span class="live-dot"></span>
+                  <span>Live Sync</span>
+                </div>
+                <button class="btn-clear-cart" onclick="clearCart()">ล้างตะกร้า</button>
+              </div>
             </div>
             <div class="cart-body" id="cartBody">
               <% if (cart.length === 0) { %>
@@ -661,6 +698,89 @@
       updateInspector('POST', '/lab01/cart/clear', null, data);
       refreshCart([]);
     }
+
+    // ============================================
+    // Auto-polling for real-time cart sync
+    // When students use curl, the page updates automatically
+    // ============================================
+
+    let lastCartHash = '';
+    let pollingInterval = null;
+
+    // Create a simple hash of cart state to detect changes
+    function hashCart(cart) {
+      return JSON.stringify(cart.map(item => `${item.id}:${item.quantity}`).sort());
+    }
+
+    // Silent cart refresh (doesn't update Network Inspector)
+    async function silentCartRefresh() {
+      try {
+        const response = await fetch('/lab01/cart');
+        const data = await response.json();
+
+        if (data.success && data.data) {
+          const newHash = hashCart(data.data);
+
+          // Only update if cart has changed
+          if (newHash !== lastCartHash) {
+            lastCartHash = newHash;
+            refreshCart(data.data);
+
+            // Flash the live indicator to show update
+            const indicator = document.getElementById('liveIndicator');
+            indicator.style.background = '#22c55e30';
+            setTimeout(() => {
+              indicator.style.background = '';
+            }, 300);
+          }
+        }
+      } catch (error) {
+        console.log('Polling error:', error);
+        // Show paused state on error
+        document.getElementById('liveIndicator').classList.add('paused');
+      }
+    }
+
+    // Start auto-polling
+    function startPolling() {
+      // Initial sync
+      silentCartRefresh();
+
+      // Poll every 2 seconds
+      pollingInterval = setInterval(silentCartRefresh, 2000);
+
+      document.getElementById('liveIndicator').classList.remove('paused');
+      console.log('🔄 Live sync started - cart updates every 2 seconds');
+    }
+
+    // Stop polling (for debugging)
+    function stopPolling() {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+      }
+      document.getElementById('liveIndicator').classList.add('paused');
+      console.log('⏸️ Live sync paused');
+    }
+
+    // Initialize cart hash and start polling on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set initial hash from server-rendered cart
+      const initialCart = <%- JSON.stringify(cart) %>;
+      lastCartHash = hashCart(initialCart);
+
+      // Start polling
+      startPolling();
+    });
+
+    // Pause polling when tab is hidden (save resources)
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        startPolling();
+      }
+    });
   </script>
 </body>
 </html>

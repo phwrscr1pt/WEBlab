@@ -6,10 +6,160 @@
   <title><%= title %> | ThaiMart</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Theme Variables */
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b7280;
+      --header-bg: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+      --header-text: #ffffff;
+      --card-bg: #ffffff;
+      --card-border: #e5e7eb;
+    }
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --header-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --header-text: #f1f5f9;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+    }
+    [data-theme="orange"] {
+      --bg-primary: #fff7ed;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b7280;
+      --header-bg: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      --header-text: #ffffff;
+      --card-bg: #ffffff;
+      --card-border: #fed7aa;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+    .header {
+      background: var(--header-bg);
+    }
+    .header, .header a, .header .logo-text, .header-slogan {
+      color: var(--header-text);
+    }
+    .card, .cart-section {
+      background: var(--card-bg);
+      border-color: var(--card-border);
+    }
+    .card-header {
+      background: var(--card-border);
+      color: var(--text-primary);
+    }
+    .text-muted {
+      color: var(--text-secondary) !important;
+    }
+
+    /* Theme Switcher */
+    .theme-switcher {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-left: 1rem;
+    }
+    .theme-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+    .theme-btn:hover {
+      transform: scale(1.1);
+      border-color: rgba(255,255,255,0.8);
+    }
+    .theme-btn.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+    }
+    .theme-btn-light { background: #f8fafc; }
+    .theme-btn-dark { background: #1e293b; }
+    .theme-btn-orange { background: #f97316; }
+
+    /* Exercise Panel */
+    .exercise-panel {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
+      margin-top: 1.5rem;
+    }
+    .exercise-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .exercise-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .exercise-item {
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .exercise-item h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      color: #fbbf24;
+    }
+    .exercise-item p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 0.5rem;
+    }
+    .exercise-item ol {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.9);
+    }
+    .exercise-item li {
+      margin-bottom: 0.25rem;
+    }
+    .exercise-item code {
+      background: rgba(0,0,0,0.3);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+    }
+    .cookie-display {
+      background: #0d0d0d;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+      overflow-x: auto;
+    }
+    .cookie-name { color: #60a5fa; }
+    .cookie-value { color: #86efac; }
+  </style>
 </head>
-<body>
+<body data-theme="<%= theme %>">
   <header class="header">
     <div class="container header-content">
       <a href="/" class="logo">
@@ -22,7 +172,20 @@
         <a href="/lab02/profile" class="nav-link active">โปรไฟล์</a>
         <a href="/lab02/logout" class="nav-link">ออกจากระบบ</a>
       </nav>
-      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+      <div class="theme-switcher">
+        <form action="/lab02/theme" method="POST" style="display:contents;">
+          <input type="hidden" name="theme" value="light">
+          <button type="submit" class="theme-btn theme-btn-light <%= theme === 'light' ? 'active' : '' %>" title="Light Theme">☀️</button>
+        </form>
+        <form action="/lab02/theme" method="POST" style="display:contents;">
+          <input type="hidden" name="theme" value="dark">
+          <button type="submit" class="theme-btn theme-btn-dark <%= theme === 'dark' ? 'active' : '' %>" title="Dark Theme">🌙</button>
+        </form>
+        <form action="/lab02/theme" method="POST" style="display:contents;">
+          <input type="hidden" name="theme" value="orange">
+          <button type="submit" class="theme-btn theme-btn-orange <%= theme === 'orange' ? 'active' : '' %>" title="ThaiMart Orange">🧡</button>
+        </form>
+      </div>
     </div>
   </header>
 
@@ -117,6 +280,49 @@
 
       <div class="text-center mt-3">
         <a href="/lab02/logout" class="btn btn-outline">ออกจากระบบ</a>
+      </div>
+
+      <!-- Cookie Exercise Panel -->
+      <div class="exercise-panel">
+        <div class="exercise-title">🧪 ทดลองทำความเข้าใจ Cookie</div>
+        <div class="exercise-list">
+          <!-- Exercise 1: Delete Session -->
+          <div class="exercise-item">
+            <h4>แบบฝึกหัด 1: ลบ Session Cookie</h4>
+            <p>เปิด DevTools แล้วลบ cookie ชื่อ <code>thaimart_session</code></p>
+            <ol>
+              <li>กด <code>F12</code> เพื่อเปิด DevTools</li>
+              <li>ไปที่แท็บ <strong>Application</strong> → <strong>Cookies</strong></li>
+              <li>คลิกขวาที่ <code>thaimart_session</code> แล้วเลือก <strong>Delete</strong></li>
+              <li>กด <code>F5</code> เพื่อ Reload หน้า</li>
+            </ol>
+            <p style="color: #fbbf24;">🔍 สังเกต: คุณถูกบังคับให้ Login ใหม่ เพราะ server ไม่รู้จักคุณแล้ว</p>
+          </div>
+
+          <!-- Exercise 2: Theme Cookie -->
+          <div class="exercise-item">
+            <h4>แบบฝึกหัด 2: แก้ไข Theme Cookie ด้วยมือ</h4>
+            <p>เปลี่ยน theme โดยแก้ไขค่า cookie โดยตรงใน DevTools</p>
+            <ol>
+              <li>เปิด DevTools → <strong>Application</strong> → <strong>Cookies</strong></li>
+              <li>หา cookie ชื่อ <code>thaimart_theme</code></li>
+              <li>ดับเบิลคลิกที่ค่า แล้วเปลี่ยนเป็น <code>dark</code> หรือ <code>orange</code> หรือ <code>light</code></li>
+              <li>กด <code>F5</code> เพื่อ Reload</li>
+            </ol>
+            <p style="color: #fbbf24;">🔍 สังเกต: หน้าเว็บเปลี่ยน theme ตามค่าที่คุณแก้ไข</p>
+          </div>
+
+          <!-- Current Cookies Display -->
+          <div class="exercise-item">
+            <h4>🍪 Cookie ปัจจุบันของคุณ</h4>
+            <p>Cookie ที่ browser ส่งมากับ request นี้:</p>
+            <div class="cookie-display" id="cookieDisplay">
+              <span class="cookie-name">thaimart_session</span>=<span class="cookie-value"><%= sessionId %></span><br>
+              <span class="cookie-name">thaimart_user</span>=<span class="cookie-value"><%= username %></span><br>
+              <span class="cookie-name">thaimart_theme</span>=<span class="cookie-value"><%= theme %></span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .flash-banner {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-weight: 600;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .product-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .product-image { font-size: 4rem; margin-bottom: 1rem; }
+    .product-name { font-weight: 600; color: var(--secondary); margin-bottom: 0.5rem; }
+    .product-price { color: var(--danger); font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem; }
+    .product-price del { color: var(--text-muted); font-size: 0.9rem; margin-right: 0.5rem; }
+
+    .order-form { margin-top: 1rem; }
+    .qty-input {
+      width: 60px;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      text-align: center;
+      margin-right: 0.5rem;
+    }
+    .btn-buy {
+      background: var(--danger);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-buy:hover { background: #b91c1c; }
+
+    /* Result Section */
+    .result-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      border-radius: 12px;
+    }
+    .result-success {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      color: white;
+    }
+    .result-normal {
+      background: #f1f5f9;
+    }
+    .flag-display {
+      background: #0d0d0d;
+      color: #22c55e;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 1.25rem;
+      text-align: center;
+      margin-top: 1rem;
+      letter-spacing: 2px;
+    }
+
+    /* Instructions Panel */
+    .instructions {
+      background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+      color: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    .instructions h3 {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .instructions ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+    .instructions li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    .instructions code {
+      background: rgba(0,0,0,0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+    .hint-box {
+      background: rgba(251, 191, 36, 0.2);
+      border-left: 4px solid #fbbf24;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+    .hint-box strong { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab10" class="nav-link active">Flash Sale</a>
+      </nav>
+      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+    </div>
+  </header>
+
+  <div class="flash-banner">
+    FLASH SALE! ลดสูงสุด 100% สำหรับสมาชิก VIP เท่านั้น!
+  </div>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">Flash Sale</h1>
+      <p class="page-subtitle">สินค้าลดราคาพิเศษ จำนวนจำกัด!</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <!-- Products -->
+      <div class="products-grid">
+        <% products.forEach(product => { %>
+          <div class="product-card">
+            <div class="product-image"><%= product.image %></div>
+            <div class="product-name"><%= product.name %></div>
+            <div class="product-price">
+              ฿<%= product.price.toLocaleString() %>
+            </div>
+            <form class="order-form" action="/lab10/checkout" method="POST">
+              <input type="hidden" name="product_id" value="<%= product.id %>">
+              <!-- Hidden discount field - students must intercept and change this -->
+              <input type="hidden" name="discount_code" value="">
+              <input type="number" name="quantity" value="1" min="1" class="qty-input">
+              <button type="submit" class="btn-buy">สั่งซื้อ</button>
+            </form>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Result Section -->
+      <% if (result) { %>
+        <div class="result-section <%= result.flag ? 'result-success' : 'result-normal' %>">
+          <% if (result.flag) { %>
+            <h3>ยินดีด้วย! คุณได้รับ Flag!</h3>
+            <p>คุณสามารถ Intercept และแก้ไข HTTP Request ได้สำเร็จ</p>
+            <div class="flag-display"><%= result.flag %></div>
+            <p style="margin-top: 1rem;">
+              <strong>สินค้า:</strong> <%= result.product.name %> x <%= result.quantity %><br>
+              <strong>ราคาปกติ:</strong> ฿<%= result.subtotal.toLocaleString() %><br>
+              <strong>ส่วนลด:</strong> <%= result.discount %><br>
+              <strong>ราคาสุทธิ:</strong> ฿<%= result.total %>
+            </p>
+          <% } else if (result.product) { %>
+            <h3><%= result.message %></h3>
+            <p>
+              <strong>สินค้า:</strong> <%= result.product.name %> x <%= result.quantity %><br>
+              <strong>ราคารวม:</strong> ฿<%= result.total.toLocaleString() %>
+            </p>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">
+              ลองใช้ Burp Suite Intercept เพื่อแก้ไข request ดูสิ!
+            </p>
+          <% } else { %>
+            <h3 style="color: var(--danger);"><%= result.message %></h3>
+          <% } %>
+        </div>
+      <% } %>
+
+      <!-- Instructions -->
+      <div class="instructions">
+        <h3>🎯 Lab 10: Burp Suite - Intercept</h3>
+        <p style="margin-bottom: 1rem;">เรียนรู้การใช้ Burp Suite Intercept เพื่อแก้ไข HTTP Request</p>
+
+        <ol>
+          <li>เปิด Burp Suite และตั้งค่า Proxy (127.0.0.1:8080)</li>
+          <li>ตั้งค่า Browser ให้ใช้ Proxy ของ Burp Suite</li>
+          <li>เปิด <strong>Intercept</strong> ใน Burp Suite (Proxy → Intercept → Intercept is on)</li>
+          <li>กดปุ่ม <strong>สั่งซื้อ</strong> สินค้าใดก็ได้บนหน้านี้</li>
+          <li>Burp Suite จะ intercept request - มองหา <code>discount_code=</code> ใน body</li>
+          <li>แก้ไขค่า <code>discount_code</code> เป็นรหัสที่ถูกต้อง แล้วกด <strong>Forward</strong></li>
+        </ol>
+
+        <div class="hint-box">
+          <strong>Hint:</strong> ลองเรียก <code>GET /lab10/api/promotions</code> เพื่อดูรหัสโปรโมชั่นที่ใช้งานได้
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart Co., Ltd.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

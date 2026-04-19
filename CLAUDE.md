@@ -162,7 +162,8 @@ ThaiMart-Labs/
 ├── .env.example
 │
 ├── docs/
-│   └── DEMO_SCRIPT.md      # Instructor demo script (Web Essentials)
+│   ├── DEMO_SCRIPT.md      # Instructor demo script (Web Essentials)
+│   └── LAB_WALKTHROUGH.md  # Step-by-step walkthrough for all labs
 │
 ├── src/
 │   ├── app.js              # Express entry point
@@ -475,7 +476,8 @@ ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose ps"
 *Last Updated: 2026-04-19*
 - Added morgan for HTTP request logging (visible in docker-compose logs)
 - SSH config with `thaimart-lab` alias (passwordless access)
+- docs/LAB_WALKTHROUGH.md: Complete walkthrough for all 12 labs
+- docs/DEMO_SCRIPT.md: Instructor demo for Web Essentials
 - Lab 01: Live Sync (curl → browser updates automatically)
 - Lab 02: Theme switcher + cookie exercises
 - Labs 10-12: Burp Suite CTF challenges with flags
-- docs/DEMO_SCRIPT.md: Instructor demo for Web Essentials

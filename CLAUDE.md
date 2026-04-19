@@ -81,21 +81,24 @@
 
 ### SSH Access
 
+SSH key authentication is configured. No password required.
+
 ```bash
-# Direct command (via jump host)
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87
+# SSH Config (~/.ssh/config)
+Host jump
+    HostName 100.107.182.15
+    User root-agent
 
-# Run command on lab VM
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "docker-compose ps"
-
-# SSH Config (~/.ssh/config) for easy access
 Host thaimart-lab
     HostName 10.10.61.87
     User asdf
-    ProxyJump root-agent@100.107.182.15
+    ProxyJump jump
 
-# Then simply:
+# Quick access
 ssh thaimart-lab
+
+# Run commands
+ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose ps"
 ```
 
 ### Access URLs
@@ -121,13 +124,13 @@ ssh thaimart-lab
 ### Quick Deploy
 
 ```bash
-# On Lab VM
+# Deploy remotely (using SSH alias)
+ssh thaimart-lab "cd ~/ThaiMart-Labs && git pull && sudo docker-compose up -d"
+
+# Or on Lab VM directly
 cd ~/ThaiMart-Labs
 git pull
 sudo docker-compose up -d
-
-# Or remotely via jump host
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && git pull && sudo docker-compose up -d"
 ```
 
 ## Color Scheme
@@ -441,17 +444,20 @@ docker-compose down -v && docker-compose up -d
 # Rebuild
 docker-compose up -d --build
 
-# Deploy to Lab VM (from local machine)
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && git pull && sudo docker-compose up -d"
+# Deploy to Lab VM
+ssh thaimart-lab "cd ~/ThaiMart-Labs && git pull && sudo docker-compose up -d"
 
-# View logs on Lab VM
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo docker-compose logs -f"
+# Deploy with rebuild
+ssh thaimart-lab "cd ~/ThaiMart-Labs && git pull && sudo docker-compose up -d --build"
+
+# View logs on Lab VM (morgan shows all HTTP requests)
+ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose logs -f web"
 
 # Reset Lab VM database
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo docker-compose down -v && sudo docker-compose up -d"
+ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose down -v && sudo docker-compose up -d"
 
 # Check container status
-ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo docker-compose ps"
+ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose ps"
 ```
 
 ---
@@ -467,6 +473,8 @@ ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo do
 ---
 
 *Last Updated: 2026-04-19*
+- Added morgan for HTTP request logging (visible in docker-compose logs)
+- SSH config with `thaimart-lab` alias (passwordless access)
 - Lab 01: Live Sync (curl → browser updates automatically)
 - Lab 02: Theme switcher + cookie exercises
 - Labs 10-12: Burp Suite CTF challenges with flags

@@ -87,7 +87,7 @@ ssh thaimart-lab
 |---------|-----|
 | Homepage (Hub) | http://10.10.61.87 |
 | Cookie Logger | http://10.10.61.87/logger |
-| Lab 01 - HTTP Methods | http://10.10.61.87/lab01 |
+| Lab 01 - Shopping Cart | http://10.10.61.87/lab01 |
 | Lab 02 - Member Login | http://10.10.61.87/lab02 |
 | Lab 03 - SQL Playground | http://10.10.61.87/lab03 |
 | Lab 04 - Seller Portal (SQLi) | http://10.10.61.87/lab04 |
@@ -182,20 +182,51 @@ ThaiMart-Labs/
 
 ## Labs Detail
 
-### Lab 01: HTTP Methods (Terminal-First)
+### Lab 01: HTTP Methods (Shopping Cart + Network Inspector)
 - **Path:** `/lab01`
-- **Story:** ThaiMart Developer Portal - API Tester
-- **Concept:** GET, POST, PUT, DELETE methods
-- **Mode:** Terminal-first (students use curl commands)
+- **Story:** ThaiMart Shopping Cart
+- **Concept:** GET, POST, PUT, DELETE methods through real e-commerce actions
+- **Mode:** Interactive shopping with real-time HTTP inspection
 - **Vulnerable:** No
-- **How it works:**
-  - Page shows curl command reference with copy buttons
-  - Students must open terminal and type commands themselves
-  - API endpoint: `/lab01/api/test` returns JSON with request details
-- **Example commands:**
+- **UI Layout:**
+  - **Left side:** Product grid + Shopping cart
+  - **Right side:** Network Inspector panel
+- **Shopping Features:**
+  - Product cards with "เพิ่มลงตะกร้า" button → triggers POST
+  - Cart with quantity edit → triggers PUT
+  - Cart with remove button → triggers DELETE
+  - Clear cart button
+- **Network Inspector shows:**
+  - Request method and path
+  - Request body (JSON)
+  - Equivalent curl command (with Copy button)
+  - JSON response from server
+- **Learning:** "สิ่งที่ฉันกดบนเว็บ = curl command นี้"
+- **API Endpoints:**
+  | Method | Path | Action |
+  |--------|------|--------|
+  | GET | `/lab01/products` | List all products |
+  | GET | `/lab01/cart` | View current cart |
+  | POST | `/lab01/cart` | Add item to cart |
+  | PUT | `/lab01/cart/:id` | Update quantity |
+  | DELETE | `/lab01/cart/:id` | Remove item |
+- **Example curl commands:**
   ```bash
-  curl http://10.10.61.87/lab01/api/test
-  curl -X POST http://10.10.61.87/lab01/api/test -H "Content-Type: application/json" -d '{"name":"test"}'
+  # View products
+  curl http://10.10.61.87/lab01/products
+
+  # Add to cart
+  curl -X POST http://10.10.61.87/lab01/cart \
+       -H "Content-Type: application/json" \
+       -d '{"product_id": 1, "quantity": 1}'
+
+  # Update quantity
+  curl -X PUT http://10.10.61.87/lab01/cart/1 \
+       -H "Content-Type: application/json" \
+       -d '{"quantity": 3}'
+
+  # Remove from cart
+  curl -X DELETE http://10.10.61.87/lab01/cart/1
   ```
 
 ### Lab 02: Stateless Demo
@@ -338,4 +369,4 @@ ssh -J root-agent@100.107.182.15 asdf@10.10.61.87 "cd ~/ThaiMart-Labs && sudo do
 
 ---
 
-*Last Updated: 2026-04-18 (Labs 01, 03, 06 updated to hands-on mode)*
+*Last Updated: 2026-04-19 (Lab 01 redesigned as Shopping Cart with Network Inspector)*

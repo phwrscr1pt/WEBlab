@@ -45,4 +45,28 @@ router.post('/submit', async (req, res) => {
   }
 });
 
+// Clear all reviews (for instructor to reset between student groups)
+router.post('/clear', async (req, res) => {
+  const pool = req.app.locals.pool;
+
+  try {
+    // Delete all reviews
+    await pool.query('DELETE FROM reviews');
+
+    // Re-seed with 3 normal reviews
+    await pool.query(`
+      INSERT INTO reviews (product_id, reviewer_name, content) VALUES
+      (1, 'สมชาย ก.', 'สินค้าดีมากครับ ส่งไว แพ็คแน่น ประทับใจ!'),
+      (1, 'นภา ส.', 'ใช้งานได้ดี คุ้มค่ากับราคา แนะนำเลยค่ะ'),
+      (1, 'วิชัย ม.', 'ซื้อมาให้แฟน ชอบมากครับ จะกลับมาซื้ออีก')
+    `);
+
+    console.log('[Lab09] Reviews cleared and re-seeded');
+    res.redirect('/lab09');
+  } catch (err) {
+    console.error('[Lab09] Clear Error:', err.message);
+    res.redirect('/lab09');
+  }
+});
+
 module.exports = router;

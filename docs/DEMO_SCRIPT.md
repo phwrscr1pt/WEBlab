@@ -248,6 +248,113 @@ web_1  | GET /lab07?q=<script>alert(1)</script> 200 8.123 ms - 2345
 
 ---
 
+## Part 6: Project Files Explained (อธิบายไฟล์ในโปรเจค)
+
+### พูดกับนักเรียน:
+> "มาดูกันว่าโปรเจค ThaiMart ประกอบด้วยไฟล์อะไรบ้าง"
+
+### Root Files (ไฟล์หลัก)
+
+| ไฟล์ | คำอธิบาย |
+|------|----------|
+| `CLAUDE.md` | เอกสาร specification ของโปรเจค รวมรายละเอียด labs ทั้งหมด |
+| `README.md` | คู่มือติดตั้งและใช้งานเบื้องต้น |
+| `docker-compose.yml` | กำหนด containers (web + db) และ network settings |
+| `Dockerfile` | สร้าง Docker image สำหรับ Node.js application |
+| `package.json` | รายการ dependencies (express, pg, ejs, etc.) |
+| `.env.example` | ตัวอย่างไฟล์ environment variables |
+| `.gitignore` | ไฟล์ที่ไม่ต้อง track ใน git |
+
+### docs/ (เอกสาร)
+
+| ไฟล์ | คำอธิบาย |
+|------|----------|
+| `DEMO_SCRIPT.md` | สคริปต์สำหรับ instructor demo (ไฟล์นี้) |
+| `LAB_WALKTHROUGH.md` | วิธีทำ lab ทั้ง 12 ข้อแบบ step-by-step |
+
+### src/ (Source Code)
+
+#### src/app.js - Entry Point
+```
+• จุดเริ่มต้นของ Application
+• ตั้งค่า Express, middleware, database connection
+• โหลด routes ทั้งหมด
+• เริ่ม server ที่ port 3000
+```
+
+#### src/routes/ (Route Handlers)
+
+| ไฟล์ | Lab | หน้าที่ |
+|------|-----|---------|
+| `index.js` | Hub | แสดงหน้าแรก รายการ labs ทั้งหมด |
+| `lab01.js` | 01 | Shopping Cart API (GET/POST/PUT/DELETE) |
+| `lab02.js` | 02 | Login, Session, Theme cookie |
+| `lab03.js` | 03 | SQL Playground - รัน SQL queries |
+| `lab04.js` | 04 | Seller Portal - SQL Injection vulnerable |
+| `lab05.js` | 05 | Staff Directory - Union SQLi vulnerable |
+| `lab06.js` | 06 | Category Page - SQLmap target |
+| `lab07.js` | 07 | Product Search - Reflected XSS |
+| `lab08.js` | 08 | Member Search - Cookie Stealing XSS |
+| `lab09.js` | 09 | Reviews - Stored XSS |
+| `lab10.js` | 10 | Flash Sale - Burp Intercept CTF |
+| `lab11.js` | 11 | Internal API - Burp Repeater CTF |
+| `lab12.js` | 12 | Gift Card - Burp Intruder CTF |
+| `logger.js` | - | Cookie catcher สำหรับ XSS labs |
+
+#### src/views/ (EJS Templates)
+
+| ไฟล์ | คำอธิบาย |
+|------|----------|
+| `layout.ejs` | Template หลัก (header, footer, CSS/JS) |
+| `hub.ejs` | หน้าแรก แสดงรายการ labs |
+| `404.ejs` | หน้า Page Not Found |
+| `error.ejs` | หน้าแสดง Error |
+
+#### src/views/labs/ (Lab Templates)
+
+| ไฟล์ | Lab | คำอธิบาย |
+|------|-----|----------|
+| `lab01.ejs` | 01 | Shopping Cart + Network Inspector UI |
+| `lab02-home.ejs` | 02 | หน้าแรก Member Area |
+| `lab02-login.ejs` | 02 | ฟอร์ม Login |
+| `lab02-profile.ejs` | 02 | Profile + Cookie exercises |
+| `lab03.ejs` | 03 | SQL Playground textarea + table view |
+| `lab04-login.ejs` | 04 | Seller login form (SQLi) |
+| `lab04-dashboard.ejs` | 04 | Seller dashboard |
+| `lab05.ejs` | 05 | Staff search form (Union SQLi) |
+| `lab06.ejs` | 06 | SQLmap instructions |
+| `lab06-target.ejs` | 06 | Vulnerable category page |
+| `lab07.ejs` | 07 | Product search (Reflected XSS) |
+| `lab08-home.ejs` | 08 | Member home |
+| `lab08-login.ejs` | 08 | Member login |
+| `lab08-search.ejs` | 08 | Member search (Cookie Stealing) |
+| `lab09.ejs` | 09 | Product reviews (Stored XSS) |
+| `lab10.ejs` | 10 | Flash Sale order form |
+| `lab11.ejs` | 11 | Internal API explorer |
+| `lab12.ejs` | 12 | Gift Card PIN form |
+| `logger.ejs` | - | แสดง captured cookies |
+
+#### src/public/ (Static Files)
+
+| ไฟล์ | คำอธิบาย |
+|------|----------|
+| `css/style.css` | CSS styles ทั้งหมด (ThaiMart theme) |
+| `js/main.js` | JavaScript สำหรับ frontend interactions |
+
+### database/ (Database)
+
+| ไฟล์ | คำอธิบาย |
+|------|----------|
+| `init.sql` | Schema + seed data สำหรับทุก table |
+
+### อธิบายเพิ่มเติม:
+> "ไฟล์สำคัญที่นักเรียนควรดู:
+> 1. **src/routes/*.js** - ดูว่า server รับ request แล้วทำอะไร (จุดที่มี vulnerability)
+> 2. **src/views/labs/*.ejs** - ดูว่า HTML render ยังไง (จุดที่เกิด XSS)
+> 3. **database/init.sql** - ดูโครงสร้าง database และ hidden tables"
+
+---
+
 ## Quick Commands Reference
 
 ```bash

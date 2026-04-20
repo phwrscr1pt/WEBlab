@@ -53,7 +53,7 @@ Connected all firewall bridge interfaces to their correct bridges:
 
 ```bash
 # VMs on vmbr0 (main network with internet)
-brctl addif vmbr0 fwpr102p0   # tailscale-router-North
+brctl addif vmbr0 fwpr102p0   # tailscale-router-Arm
 brctl addif vmbr0 fwpr123p0   # ctfd-summer5
 brctl addif vmbr0 fwpr124p0   # tailscale-router-Nhuea
 brctl addif vmbr0 fwpr126p0   # tailscale-router-Focus
@@ -171,7 +171,7 @@ Gateway (10.10.61.4)
 │                                         │
 │  nic0 ─────► vmbr0 (10.10.61.0/24)     │
 │                │                        │
-│                ├── VM 102 (Tailscale)   │
+│                ├── VM 102 (10.10.61.102)│
 │                ├── VM 123 (CTFd)        │
 │                ├── VM 124 (Tailscale)   │
 │                ├── VM 126 (Tailscale)   │
@@ -199,6 +199,7 @@ Gateway (10.10.61.4)
 
 | VMID | Name | IP | Internet |
 |------|------|-----|----------|
+| 102 | tailscale-router-Arm | 10.10.61.102 | OK (Static IP, guest agent enabled) |
 | 123 | ctfd-summer5 | 10.10.61.193 | OK (Cloudflare tunnel active) |
 | 124 | tailscale-router-Nhuea | 10.10.61.67 | OK (Tailscale: 100.101.229.93) |
 | 129 | opensense-router | 10.10.61.131 | OK |
@@ -208,12 +209,99 @@ Gateway (10.10.61.4)
 
 | VMID | Name | Bridge | Notes |
 |------|------|--------|-------|
-| 102 | tailscale-router-North | vmbr0 | No IPv4 seen |
 | 126 | tailscale-router-Focus | vmbr0 | IPv6 only |
 | 130 | tailscale-router-Eng | vmbr0 | IPv6 only |
 | 132 | nmap-ubuntu | vmbr100 | Needs OPNsense gateway |
 | 133 | metasploitable2 | vmbr100 | Needs OPNsense gateway |
 | 140-146 | router-hackday-std* | vmbr0 | Internal DHCP servers |
+
+---
+
+## VM 102 Internal Network Fix (2026-04-20)
+
+VM 102 had bridge connectivity but no IPv4 address. The issue was **inside the VM** - the network interface was DOWN and netplan wasn't configured.
+
+### Problem
+
+```
+$ ip addr show ens18
+2: ens18: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN
+```
+
+- Interface `ens18` was **DOWN**
+- No DHCP client (`dhclient: command not found`)
+- Netplan not configured for DHCP
+
+### Solution Applied
+
+#### 1. Proxmox-side Configuration
+
+```bash
+# Added serial port for terminal access
+qm set 102 -serial0 socket
+
+# Added cloud-init drive
+qm set 102 --ide0 local-lvm:cloudinit
+qm set 102 --ipconfig0 ip=10.10.61.102/24,gw=10.10.61.4
+
+# Enabled QEMU guest agent
+qm set 102 --agent 1
+```
+
+#### 2. Inside VM (via console)
+
+```bash
+# Bring interface up
+sudo ip link set ens18 up
+
+# Create netplan config with static IP
+sudo tee /etc/netplan/01-netcfg.yaml << 'EOF'
+network:
+  version: 2
+  ethernets:
+    ens18:
+      addresses:
+        - 10.10.61.102/24
+      routes:
+        - to: default
+          via: 10.10.61.4
+      nameservers:
+        addresses:
+          - 8.8.8.8
+EOF
+
+sudo chmod 600 /etc/netplan/01-netcfg.yaml
+sudo netplan apply
+```
+
+#### 3. Install Guest Agent
+
+```bash
+sudo apt update && sudo apt install -y qemu-guest-agent
+sudo systemctl enable qemu-guest-agent
+sudo systemctl start qemu-guest-agent
+```
+
+### Verification
+
+```bash
+# From Proxmox host
+ping -c 3 10.10.61.102
+qm agent 102 ping
+qm agent 102 network-get-interfaces
+```
+
+### VM 102 Final Configuration
+
+| Item | Value |
+|------|-------|
+| Name | tailscale-router-Arm |
+| IP | 10.10.61.102/24 |
+| Gateway | 10.10.61.4 |
+| MAC | bc:24:11:6e:48:6d |
+| Guest Agent | Enabled |
+| Serial Port | socket |
+| Cloud-init | Configured |
 
 ---
 
@@ -286,6 +374,11 @@ Host cyberlab2
     HostName 10.10.61.11
     User root
     ProxyJump jump
+
+Host vm102
+    HostName 10.10.61.102
+    User user
+    ProxyJump jump
 ```
 
 ### Quick Access
@@ -303,6 +396,7 @@ ssh -J root-agent@100.107.182.15 root@10.10.61.11
 | 100.107.182.15 (jump) | root-agent | SSH key |
 | 10.10.61.11 (cyberlab2) | root | SSH key (configured during session) |
 | 10.10.61.67 (VM 124) | user | SSH key / password: tailuser11 |
+| 10.10.61.102 (VM 102) | user | SSH key |
 
 ---
 
@@ -334,3 +428,4 @@ Consider reporting this to Proxmox if it persists after Proxmox updates.
 ---
 
 *Document created: 2026-04-19*
+*Last updated: 2026-04-20 - Added VM 102 internal network fix*

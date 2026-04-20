@@ -482,10 +482,15 @@ ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose ps"
 
 ---
 
-*Last Updated: 2026-04-20*
+*Last Updated: 2026-04-21*
+- Lab 05: Added admin login `/lab05/admin` with flag `SMC{un10n_2_4dm1n_p4n3l}`
+- Lab 05: Search now works for both name AND department
+- Lab 05: Removed explanation panel (clean UI, no hints)
+- Lab 06: Verified working with sqlmap (tested on Kali WSL)
+
+*Previous Updates (2026-04-20):*
 - Lab 03: Removed example SQL hints (students must think independently)
 - Lab 04: Added flag `SMC{4uth_byp4ss_success}` on successful SQLi bypass
-- Lab 05: Added expected output examples for Union SQLi steps
 - Lab 06: Fixed add-to-cart button (local cart for realism)
 - Added morgan for HTTP request logging (visible in docker-compose logs)
 - SSH config with `thaimart-lab` alias (passwordless access)

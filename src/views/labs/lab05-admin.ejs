@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | ThaiMart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .flag-banner {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+    .flag-banner h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .flag-code {
+      background: rgba(0,0,0,0.2);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 1.25rem;
+      display: inline-block;
+      margin-top: 0.5rem;
+      letter-spacing: 1px;
+    }
+    .admin-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .method-info {
+      background: #eff6ff;
+      border: 1px solid #3b82f6;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .method-info strong {
+      color: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-content">
+      <a href="/" class="logo">
+        <span class="logo-icon">🛒</span>
+        <span class="logo-text">ThaiMart</span>
+      </a>
+      <nav class="nav">
+        <a href="/" class="nav-link">หน้าแรก</a>
+        <a href="/lab05" class="nav-link">Staff Directory</a>
+        <a href="/lab05/admin/dashboard" class="nav-link active">Dashboard</a>
+        <a href="/lab05/admin/logout" class="nav-link">ออกจากระบบ</a>
+      </nav>
+      <span class="admin-badge">🔐 Admin Panel</span>
+    </div>
+  </header>
+
+  <div class="page-header">
+    <div class="container">
+      <h1 class="page-title">ยินดีต้อนรับ, superadmin</h1>
+      <p class="page-subtitle">👑 System Administrator</p>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="container page-content">
+      <!-- Flag Banner -->
+      <div class="flag-banner">
+        <h2>🎉 Union SQLi to Admin Access สำเร็จ!</h2>
+        <p>คุณใช้ข้อมูลที่ดึงจาก Union SQL Injection เข้าสู่ระบบได้สำเร็จ</p>
+        <div class="flag-code"><%= flag %></div>
+      </div>
+
+      <div class="method-info">
+        <strong>🔍 Attack Path:</strong><br>
+        1. ใช้ Union SQLi ดึงข้อมูลจากตาราง <code>admin_credentials</code><br>
+        2. ได้ username: <code>superadmin</code> และ password_hash: <code>e10adc3949ba59abbe56e057f20f883e</code><br>
+        3. Crack MD5 hash ได้รหัสผ่าน: <code>123456</code><br>
+        4. ใช้ credentials เข้าสู่ระบบ Admin Panel
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">พนักงานทั้งหมด</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">5</div>
+          <div class="stat-label">แผนก</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Admin Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8</div>
+          <div class="stat-label">Database Tables</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">ข้อมูลบัญชี Admin</div>
+          <div class="card-body">
+            <table class="table">
+              <tr>
+                <td><strong>Username</strong></td>
+                <td>superadmin</td>
+              </tr>
+              <tr>
+                <td><strong>Role</strong></td>
+                <td><span style="color: var(--danger); font-weight: 600;">👑 administrator</span></td>
+              </tr>
+              <tr>
+                <td><strong>Password Hash</strong></td>
+                <td style="font-family: 'Fira Code', monospace; font-size: 0.8rem;">e10adc3949ba59abbe56e057f20f883e</td>
+              </tr>
+              <tr>
+                <td><strong>Password</strong></td>
+                <td><code>123456</code> (MD5 cracked)</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">System Logs</div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Event</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>14:32:01</td>
+                  <td>Admin login</td>
+                  <td><span class="text-success">Success</span></td>
+                </tr>
+                <tr>
+                  <td>14:28:45</td>
+                  <td>SQLi detected</td>
+                  <td><span style="color: var(--warning);">Warning</span></td>
+                </tr>
+                <tr>
+                  <td>14:25:12</td>
+                  <td>Staff search</td>
+                  <td><span class="text-muted">Info</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center mt-3">
+        <a href="/lab05/admin/logout" class="btn btn-outline">ออกจากระบบ</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p class="footer-text">© 2569 ThaiMart System Administration</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

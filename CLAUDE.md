@@ -17,7 +17,7 @@
 | 01 | HTTP Methods | Teaching | - |
 | 02 | Cookie/Session | Teaching | user1 / password123 |
 | 03 | SQL Basics | Teaching | - |
-| 04 | SQL Injection | Vulnerable | seller1 / securepass99 |
+| 04 | SQL Injection | Vulnerable | `SMC{4uth_byp4ss_success}` |
 | 05 | Union SQLi | Vulnerable | superadmin in DB |
 | 06 | SQLmap | Vulnerable | secret_orders table |
 | 07 | Reflected XSS | Vulnerable | - |
@@ -308,7 +308,12 @@ ThaiMart-Labs/
 - **Story:** ThaiMart Seller Portal
 - **Credentials:** seller1 / securepass99
 - **Vulnerable:** YES - SQL Injection
+- **Flag:** `SMC{4uth_byp4ss_success}`
 - **Attack:** `' OR '1'='1` or `admin'--`
+- **How it works:**
+  - On successful bypass, dashboard shows flag banner
+  - Shows what input was used and which DB user was retrieved
+  - Fake seller dashboard with stats for realism
 
 ### Lab 05: Union-Based SQLi
 - **Path:** `/lab05`
@@ -473,7 +478,11 @@ ssh thaimart-lab "cd ~/ThaiMart-Labs && sudo docker-compose ps"
 
 ---
 
-*Last Updated: 2026-04-19*
+*Last Updated: 2026-04-20*
+- Lab 03: Removed example SQL hints (students must think independently)
+- Lab 04: Added flag `SMC{4uth_byp4ss_success}` on successful SQLi bypass
+- Lab 05: Added expected output examples for Union SQLi steps
+- Lab 06: Fixed add-to-cart button (local cart for realism)
 - Added morgan for HTTP request logging (visible in docker-compose logs)
 - SSH config with `thaimart-lab` alias (passwordless access)
 - docs/LAB_WALKTHROUGH.md: Complete walkthrough for all 12 labs

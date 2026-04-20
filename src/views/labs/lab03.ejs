@@ -105,29 +105,6 @@
       margin-bottom: 1rem;
       color: #1e3a5f;
     }
-    .example-box {
-      background: #fffbeb;
-      border: 1px solid #fbbf24;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    .example-box h4 {
-      color: #b45309;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-    }
-    .example-code {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.8rem;
-      color: #92400e;
-      cursor: pointer;
-      padding: 0.25rem 0;
-    }
-    .example-code:hover {
-      color: #b45309;
-      text-decoration: underline;
-    }
     .schema-box {
       background: #f0fdf4;
       border: 1px solid #22c55e;
@@ -217,29 +194,6 @@
             </div>
           </form>
           <form id="resetForm" action="/lab03/reset" method="POST" style="display:none;"></form>
-
-          <!-- Examples -->
-          <div class="example-box mt-2">
-            <h4>💡 ตัวอย่างคำสั่ง (คลิกเพื่อใส่)</h4>
-            <div class="example-code" onclick="setQuery('SELECT * FROM playground_products;')">
-              SELECT * FROM playground_products;
-            </div>
-            <div class="example-code" onclick="setQuery(`SELECT * FROM playground_products WHERE category = 'อิเล็กทรอนิกส์';`)">
-              SELECT * FROM playground_products WHERE category = 'อิเล็กทรอนิกส์';
-            </div>
-            <div class="example-code" onclick="setQuery(`SELECT * FROM playground_products WHERE price > 10000 ORDER BY price DESC;`)">
-              SELECT * FROM playground_products WHERE price > 10000 ORDER BY price DESC;
-            </div>
-            <div class="example-code" onclick="setQuery(`INSERT INTO playground_products (name, price, stock, category) VALUES ('สินค้าทดสอบ', 999, 10, 'ทดสอบ');`)">
-              INSERT INTO playground_products (name, price, stock, category) VALUES ('สินค้าทดสอบ', 999, 10, 'ทดสอบ');
-            </div>
-            <div class="example-code" onclick="setQuery(`UPDATE playground_products SET price = 9999 WHERE id = 1;`)">
-              UPDATE playground_products SET price = 9999 WHERE id = 1;
-            </div>
-            <div class="example-code" onclick="setQuery(`DELETE FROM playground_products WHERE id = 10;`)">
-              DELETE FROM playground_products WHERE id = 10;
-            </div>
-          </div>
 
           <!-- Query Result -->
           <% if (query) { %>
@@ -354,10 +308,5 @@
     </div>
   </footer>
 
-  <script>
-    function setQuery(sql) {
-      document.querySelector('.sql-textarea').value = sql;
-    }
-  </script>
 </body>
 </html>

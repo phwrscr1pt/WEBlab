@@ -79,6 +79,60 @@
     .back-link:hover {
       color: var(--primary);
     }
+    .cart-icon {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      border-radius: 20px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .cart-count {
+      background: white;
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 10px;
+      min-width: 18px;
+      text-align: center;
+    }
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #16a34a;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .btn-add-cart {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .btn-add-cart:hover {
+      background: var(--primary-dark);
+    }
   </style>
 </head>
 <body>
@@ -93,7 +147,9 @@
         <a href="/lab06?id=1" class="nav-link active">หมวดหมู่</a>
         <a href="/lab07" class="nav-link">ค้นหา</a>
       </nav>
-      <div class="header-slogan">ช้อปสนุก ส่งไว ทั่วไทย</div>
+      <div class="cart-icon" onclick="showCart()">
+        🛒 ตะกร้า <span class="cart-count" id="cartCount">0</span>
+      </div>
     </div>
   </header>
 
@@ -139,7 +195,7 @@
               <div class="product-info">
                 <div class="product-name"><%= product.name %></div>
                 <div class="product-price">฿<%= product.price ? product.price.toLocaleString() : '0' %></div>
-                <button class="btn btn-primary btn-sm mt-2" style="width: 100%;">หยิบใส่ตะกร้า</button>
+                <button class="btn-add-cart mt-2" onclick="addToCart('<%= product.name %>', <%= product.price %>)">เพิ่มลงตะกร้า</button>
               </div>
             </div>
           <% }) %>
@@ -161,5 +217,52 @@
       </div>
     </div>
   </footer>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Simple local cart for Lab 06 (for realism - resets on page reload)
+    let cart = [];
+
+    function addToCart(name, price) {
+      const existingItem = cart.find(item => item.name === name);
+      if (existingItem) {
+        existingItem.quantity++;
+      } else {
+        cart.push({ name, price, quantity: 1 });
+      }
+      updateCartCount();
+      showToast('เพิ่ม "' + name + '" ลงตะกร้าแล้ว');
+    }
+
+    function updateCartCount() {
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cartCount').textContent = totalItems;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function showCart() {
+      if (cart.length === 0) {
+        alert('ตะกร้าว่างเปล่า');
+        return;
+      }
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      let message = 'ตะกร้าสินค้า:\n\n';
+      cart.forEach(item => {
+        message += '• ' + item.name + ' x' + item.quantity + ' = ฿' + (item.price * item.quantity).toLocaleString() + '\n';
+      });
+      message += '\nรวม: ฿' + total.toLocaleString();
+      alert(message);
+    }
+  </script>
 </body>
 </html>

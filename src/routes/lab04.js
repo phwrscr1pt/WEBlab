@@ -26,12 +26,24 @@ router.post('/login', async (req, res) => {
 
     if (result.rows.length > 0) {
       const user = result.rows[0];
+
+      // Detect if login was via SQLi bypass
+      // Check if the submitted credentials contain SQLi patterns or don't match DB
+      const sqliPatterns = ["'", '"', '--', 'OR', 'or', '=', ';', '/*', '*/'];
+      const inputContainsSqli = sqliPatterns.some(pattern =>
+        username.includes(pattern) || password.includes(pattern)
+      );
+      const credentialsMismatch = user.username !== username || user.password !== password;
+      const isBypass = inputContainsSqli || credentialsMismatch;
+
       // Set session
       req.session.lab04_user = {
         id: user.id,
         username: user.username,
         shop_name: user.shop_name,
-        role: user.role
+        role: user.role,
+        login_input: username, // Store what user typed
+        bypassed: isBypass
       };
       return res.redirect('/lab04/dashboard');
     }

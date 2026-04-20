@@ -6,8 +6,50 @@
   <title><%= title %> | ThaiMart</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .flag-banner {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    }
+    .flag-banner h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .flag-code {
+      background: rgba(0,0,0,0.2);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 1.25rem;
+      display: inline-block;
+      margin-top: 0.5rem;
+      letter-spacing: 1px;
+    }
+    .bypass-info {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .bypass-info strong {
+      color: #b45309;
+    }
+    .bypass-info code {
+      background: #fde68a;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -27,9 +69,9 @@
 
   <div class="page-header">
     <div class="container">
-      <h1 class="page-title">ยินดีต้อนรับ, <%= user.username %></h1>
+      <h1 class="page-title">ยินดีต้อนรับ, <%= user.bypassed ? 'Admin' : user.username %></h1>
       <p class="page-subtitle">
-        <% if (user.role === 'admin') { %>
+        <% if (user.bypassed || user.role === 'admin') { %>
           👑 Administrator
         <% } else { %>
           🏪 <%= user.shop_name || 'Seller' %>
@@ -40,9 +82,23 @@
 
   <main class="main">
     <div class="container page-content">
-      <div class="alert alert-success">
-        <strong>เข้าสู่ระบบสำเร็จ!</strong> คุณเข้าสู่ระบบในฐานะ <strong><%= user.role %></strong>
-      </div>
+      <% if (user.bypassed) { %>
+        <!-- Flag Banner for SQLi Bypass -->
+        <div class="flag-banner">
+          <h2>🎉 SQL Injection Bypass สำเร็จ!</h2>
+          <p>คุณเข้าสู่ระบบโดยไม่ต้องใช้รหัสผ่านจริง</p>
+          <div class="flag-code">SMC{4uth_byp4ss_success}</div>
+        </div>
+
+        <div class="bypass-info">
+          <strong>🔍 Login Input:</strong> <code><%= user.login_input %></code><br>
+          <strong>📊 DB User Retrieved:</strong> <code><%= user.username %></code>
+        </div>
+      <% } else { %>
+        <div class="alert alert-success">
+          <strong>เข้าสู่ระบบสำเร็จ!</strong> คุณเข้าสู่ระบบในฐานะ <strong><%= user.role %></strong>
+        </div>
+      <% } %>
 
       <div class="dashboard-grid">
         <div class="stat-card">

@@ -353,6 +353,8 @@ Lab นี้ block คำสั่งอันตราย:
 
 **เป้าหมาย:** เข้าใจและทดลอง SQL Injection แบบ Authentication Bypass
 
+**Flag:** `SMC{4uth_byp4ss_success}`
+
 ### Credentials (ปกติ)
 - **Username:** seller1
 - **Password:** securepass99
@@ -388,6 +390,8 @@ WHERE username = '' OR '1'='1' AND password = '' OR '1'='1'
 ```
 
 เนื่องจาก `'1'='1'` เป็นจริงเสมอ → Login สำเร็จ!
+
+**หลัง Bypass สำเร็จ:** จะเห็น flag banner `SMC{4uth_byp4ss_success}` และข้อมูลว่า input อะไรถูกใช้
 
 #### วิธีที่ 2: Comment out password check
 1. ใส่ในช่อง Username:

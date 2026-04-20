@@ -439,7 +439,9 @@ seller1'--
 
 **URL:** http://10.10.61.87/lab05
 
-**เป้าหมาย:** ใช้ UNION-based SQL Injection เพื่อดึงข้อมูลจาก tables อื่น
+**เป้าหมาย:** ใช้ UNION-based SQL Injection เพื่อดึงข้อมูลจาก tables อื่น และใช้ credentials ที่ได้ login เข้า Admin Panel
+
+**Flag:** `SMC{un10n_2_4dm1n_p4n3l}`
 
 ### แนวคิด
 
@@ -511,10 +513,35 @@ ID │ ชื่อ-นามสกุล │ แผนก                      
 
 💡 **พบบัญชี:** `superadmin` พร้อม password hash (MD5)
 
+#### Step 7: Crack MD5 Hash
+Password hash ที่ได้: `e10adc3949ba59abbe56e057f20f883e`
+
+ใช้เครื่องมือ crack เช่น:
+- https://crackstation.net
+- https://hashes.com/en/decrypt/hash
+- `hashcat -m 0 hash.txt wordlist.txt`
+
+**ผลลัพธ์:** `123456`
+
+#### Step 8: Login เข้า Admin Panel
+1. ไปที่ http://10.10.61.87/lab05/admin
+2. ใส่ Username: `superadmin`
+3. ใส่ Password: `123456`
+4. กด Login
+
+**ผลลัพธ์:** เข้าสู่ Admin Dashboard และได้ Flag!
+
+```
+🎉 Union SQLi to Admin Access สำเร็จ!
+Flag: SMC{un10n_2_4dm1n_p4n3l}
+```
+
 ### สิ่งที่เรียนรู้
 - UNION-based SQLi ใช้ดึงข้อมูลจาก tables อื่น
 - `information_schema` เก็บ metadata ของ database
 - ขั้นตอนการ enumerate: columns → tables → data
+- Password hashes สามารถ crack ได้ถ้าใช้รหัสผ่านง่ายๆ
+- ข้อมูลที่ได้จาก SQLi สามารถนำไปใช้โจมตีต่อได้ (credential reuse)
 
 ---
 
